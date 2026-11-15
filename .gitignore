@@ -1,0 +1,17 @@
+# ---- Local-only material: never part of the public repository ----
+# research notes, raw paper extracts and data-pipeline scratch
+research/
+# original prototype file
+dsssb_tgt_cs_prep_hub*.html
+# optional local add-ons (never published)
+docs/data/extras.js
+docs/img-local/
+
+# ---- OS / editor noise ----
+Thumbs.db
+desktop.ini
+.DS_Store
+*.tmp
+~$*
+.vscode/
+.idea/
