@@ -1,6 +1,6 @@
 # DSSSB TGT Computer Science: real PYQ practice
 
-A free practice platform for the **DSSSB TGT Computer Science** exam (Post Code **41/26**, Advt. **03/2026**). It is built **only from real previous-year papers**: 1,600 questions from 8 actual DSSSB shifts, with full timed mocks, topic drills and a mistakes notebook. There's no sign-up, and it works offline.
+A free practice platform for the **DSSSB TGT Computer Science** exam (Post Code **41/26**, Advt. **03/2026**). It is built **only from real previous-year papers**: 1,600 questions from 8 actual DSSSB shifts, with full timed mocks, topic drills, a mistakes notebook, explanations for every official-key question, and 21 ranked cheat sheets. There's no sign-up, and it works offline.
 
 ### ▶ **Live site: https://aafaque2.github.io/dsssb-tgt-cs-prep/**
 
@@ -22,14 +22,25 @@ Many TGT CS "PYQ" collections are re-typed with errors, attributed to the wrong 
   - Qualifying check from Advt. 03/2026: 40 / 35 / 30 % applied to Section B *and* to the total.
   - Comparison with the last Directorate of Education cut-off.
 - **Practice drills**: pick questions by section, by Section B topic (auto-tagged) or by search term, with instant feedback or a timer. "Unseen first" and "wrong before" modes are available.
+- **Explanations for all 800 official-key questions**, written for this site. They appear in drill feedback and in mock reviews.
+  - The answer shown is always DSSSB's official key.
+  - Where the explanation argues that the key is wrong or ambiguous, it is flagged **key disputed ⚠** (18 questions) and gives both answers.
+- **Cheat sheets: 21 of them, ranked by importance.**
+  - The 16 Section B sheets are ordered by how many questions each topic had per paper in the seven DoE papers; the top 8 are *Must do*, the rest *If time permits*.
+  - The 5 Section A sheets cover the general sections.
+  - Each sheet has three parts: **Must do** (core facts, tables, formulas), **Most probable questions** (the question types that keep coming back) and **If time permits**.
+  - Purple year tags mark facts that were actually asked in that year's paper.
+  - Every sheet has a one-click drill of its questions, and sheets print cleanly (one per page) or save as PDF.
 - **Mistakes notebook** lists every question you last got wrong, ready to re-attempt.
 - **Day-by-day plan** up to the exam date you set.
 - **Verified exam facts**: vacancies, pattern, qualifying rules, tie-breaks, dates, with sources.
 - **Comfort features**: keyboard shortcuts (`1`–`4`, `Enter`, `←`/`→`, `M`, `C`), dark mode, mobile layout, and a Hindi toggle for the transcribed papers.
 
-| Practice by topic | Instant feedback |
+| Practice by topic | Instant feedback with explanation |
 |---|---|
-| ![Topic drills](screenshots/practice-topics.png) | ![Drill feedback](screenshots/drill-feedback.png) |
+| ![Topic drills](screenshots/practice-topics.png) | ![Drill feedback with an explanation](screenshots/drill-feedback.png) |
+
+![A cheat sheet: must-do facts with year tags for what was actually asked](screenshots/cheat-sheet.png)
 
 ## Question bank: 1,600 questions
 
@@ -96,7 +107,8 @@ There are no accounts, cookies, analytics or third-party requests: the site is p
 
 - Transcribed papers can contain transcription slips (e.g. a missing `#include` header or a missing table). They are labelled **Source key**.
 - Topic tags come from keyword rules on the question text and are approximate.
-- The public version has no worked explanations, only official or source answer keys.
+- Explanations cover the 800 official-key questions; the 800 transcribed questions have answer keys only.
+- Cheat-sheet rankings come from the auto-tagged topic counts, so they are a guide, not a guarantee of what will be asked.
 - Not included yet: 24 Jun 2023 Shift 2, 12 Sep 2025 Shifts 2–3, 13 Sep 2025 Shift 3, and the 2017 paper.
 
 ## Project structure
@@ -104,7 +116,8 @@ There are no accounts, cookies, analytics or third-party requests: the site is p
 ```
 docs/                 the website (served by GitHub Pages from /docs)
   index.html          the whole app: HTML + CSS + vanilla JS, no dependencies
-  data/papers.js      questions, answer keys, sections, topics
+  data/papers.js      questions, answer keys, sections, topics, explanations
+  data/sheets-*.js    the cheat sheets (Section B must-do, Section B if-time-permits, Section A)
   img/<paper>/        question and option crops, formula images
 screenshots/          images used in this README
 ```

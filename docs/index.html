@@ -64,6 +64,10 @@ h3{font-size:1rem;margin:0 0 .4em}
 .pill.amber{background:var(--amber-soft);color:var(--amber)}
 .pill.blue{background:var(--primary-soft);color:var(--primary)}
 .pill.purple{background:var(--purple-soft);color:var(--purple)}
+.exbox{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--surface2);border-left:3px solid var(--primary)}
+.exbox.kw{border-left-color:var(--amber)}
+.exhead{font-size:.74rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;cursor:help}
+.exhead .pill{text-transform:none;letter-spacing:0}
 table.t{width:100%;border-collapse:collapse;font-size:.92rem}
 table.t th,table.t td{padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
 table.t th{color:var(--muted);font-weight:600;font-size:.82rem}
@@ -138,7 +142,34 @@ select,input[type=date],input[type=number],input[type=text]{font:inherit;color:v
 .plan li{margin:4px 0}
 .plan .done{color:var(--muted);text-decoration:line-through}
 .footer-note{margin-top:28px;color:var(--muted);font-size:.82rem}
-@media (max-width:560px){.brand small{display:none}header.top .wrap{gap:8px}nav.tabs a{padding:8px 8px}h1{font-size:1.3rem}}
+/* ---------- cheat sheets ---------- */
+.y{display:inline-block;font-size:.68rem;font-weight:700;line-height:1.5;color:var(--purple);background:var(--purple-soft);border-radius:999px;padding:0 6px;margin-left:3px;vertical-align:1px;white-space:nowrap}
+.sheet .sblk{border-left:4px solid var(--border);padding:2px 0 2px 16px;margin:20px 0 0}
+.sheet .sblk.must{border-left-color:var(--green)}
+.sheet .sblk.prob{border-left-color:var(--primary)}
+.sheet .sblk.later{border-left-color:var(--muted)}
+.sheet .sblk>h2{font-size:1.05rem;margin:0 0 6px}
+.sheet h4{margin:14px 0 4px;font-size:.95rem}
+.sheet ul{margin:4px 0;padding-left:20px}
+.sheet li{margin:4px 0}
+.sheet p{margin:6px 0}
+.sheet table.t{margin:6px 0 4px}
+.sheet table.t th,.sheet table.t td{padding:5px 8px}
+.sheet code{font-family:ui-monospace,Consolas,monospace;font-size:.88em;background:var(--surface2);padding:0 4px;border-radius:4px}
+.sheet+.sheet{margin-top:16px}
+@media print{
+  :root{--bg:#fff!important;--surface:#fff!important;--surface2:#f2f3f5!important;--text:#000!important;--muted:#444!important;--border:#c8ccd4!important;--primary:#1d4ed8!important;--primary-soft:#e8eefc!important;--green:#15803d!important;--green-soft:#e7f6ec!important;--amber:#b45309!important;--amber-soft:#fdf3e2!important;--purple:#5b21b6!important;--purple-soft:#ede9fe!important;--shadow:none!important}
+  .sheet table.t{font-size:1em}
+  header.top,.noprint,.toast{display:none!important}
+  body{background:#fff;color:#000;font-size:12px}
+  .wrap{max-width:none;padding:0}
+  .card{border:0;box-shadow:none;padding:0}
+  .sheet+.sheet{break-before:page;margin-top:0}
+  .sheet li,.sheet tr{break-inside:avoid}
+  a{color:inherit;text-decoration:none}
+}
+@media (max-width:560px){.brand small{display:none}header.top .wrap{gap:8px}nav.tabs a{padding:8px 8px}h1{font-size:1.3rem}
+  .card.sheet{padding:12px}.sheet .sblk{padding-left:10px}.sheet ul{padding-left:16px}.sheet table.t{font-size:.84rem}.sheet table.t th,.sheet table.t td{padding:4px 5px}}
 </style>
 </head>
 <body>
@@ -148,6 +179,7 @@ select,input[type=date],input[type=number],input[type=text]{font:inherit;color:v
     <a href="#/home" data-t="home">Home</a>
     <a href="#/mocks" data-t="mocks">Mock tests</a>
     <a href="#/practice" data-t="practice">Practice</a>
+    <a href="#/sheets" data-t="sheets">Cheat sheets</a>
     <a href="#/mistakes" data-t="mistakes">Mistakes</a>
     <a href="#/facts" data-t="facts">Exam facts</a>
     <a href="#/settings" data-t="settings">Settings</a>
@@ -157,6 +189,9 @@ select,input[type=date],input[type=number],input[type=text]{font:inherit;color:v
 <main><div class="wrap" id="app"></div></main>
 
 <script src="data/papers.js"></script>
+<script src="data/sheets-b.js"></script>
+<script src="data/sheets-b2.js"></script>
+<script src="data/sheets-a.js"></script>
 <script>
 "use strict";
 /* ======================================================================= data */
@@ -248,6 +283,11 @@ function optHTML(q, k, lang) {
   const h = lang === "hi" && q.ohi ? q.ohi[k - 1] : q.oh[k - 1];
   return `<div class="qhtml" style="--z:${zoom()}">${h}</div>`;
 }
+function explHTML(q) {
+  if (!q.ex) return "";
+  const own = PMAP[q.pid].kind === "crop"; // the official-key papers' explanations are written for this site
+  return `<div class="exbox${q.kw ? " kw" : ""}"><div class="exhead" title="${own ? "Written for this site. The answer shown is always the official DSSSB key; ⚠ marks where the explanation questions that key." : "From the source site (local add-on file)."}">Explanation${own ? "" : " · source site"}${q.kw ? ' <span class="pill amber">key disputed ⚠</span>' : ""}</div><div class="qhtml small">${q.ex}</div></div>`;
+}
 function provenance(q) {
   const p = PMAP[q.pid];
   return `<span class="pill ${p.kind === "crop" ? "green" : "amber"}" title="${esc(p.keyNote)}">${p.kind === "crop" ? "Official key ✓" : "Source key"}</span>` +
@@ -261,9 +301,9 @@ window.addEventListener("hashchange", route);
 function route() {
   if (cleanup) { try { cleanup(); } catch (e) {} cleanup = null; }
   const [, view, id, extra] = (location.hash || "#/home").split("/");
-  document.querySelectorAll("#tabs a").forEach(a => a.classList.toggle("on", a.dataset.t === view));
+  document.querySelectorAll("#tabs a").forEach(a => a.classList.toggle("on", a.dataset.t === (view === "sheet" ? "sheets" : view)));
   window.scrollTo(0, 0);
-  const v = { home, mocks, practice, mistakesView, facts, settings, exam: () => runner(id), result: () => result(id), review: () => review(id, extra) };
+  const v = { home, mocks, practice, mistakesView, facts, settings, sheets: sheetsIndex, sheet: () => sheetView(id), exam: () => runner(id), result: () => result(id), review: () => review(id, extra) };
   const fn = view === "mistakes" ? v.mistakesView : v[view];
   (fn || home)();
 }
@@ -296,6 +336,7 @@ function home() {
         ${weak.length ? `<div class="paperrow"><div class="meta"><b>Drill your weakest: ${weak.map(w => esc(w.s)).join(", ")}</b><div class="muted small">${weak.map(w => `${esc(w.s)} ${Math.round(w.a * 100)}%`).join(" · ")}</div></div><button class="btn" onclick="quickDrill(${esc(JSON.stringify(weak.map(w => w.s)))})">Drill 20</button></div>` : ""}
         ${mistakes().length ? `<div class="paperrow"><div class="meta"><b>Re-attempt your mistakes</b><div class="muted small">${mistakes().length} questions you got wrong last time</div></div><a class="btn" href="#/mistakes">Open</a></div>` : ""}
         <div class="paperrow"><div class="meta"><b>Section B drill (DoE papers)</b><div class="muted small">20 unseen questions from Discipline 1–5 + Teaching Methodology</div></div><button class="btn" onclick="quickDrill(PART_B)">Drill 20</button></div>
+        <div class="paperrow"><div class="meta"><b>Cheat sheets</b><div class="muted small">Must-do topics ranked by past-paper frequency, with the most probable questions</div></div><a class="btn" href="#/sheets">Open</a></div>
       </div>
     </div>
     <div class="card">
@@ -500,7 +541,7 @@ function runner(id) {
   function feedbackHTML(q, chosen) {
     const ok = chosen === q.key; const p = PMAP[q.pid];
     return `<div class="expl"><div class="row" style="gap:8px"><b style="color:${ok ? "var(--green)" : "var(--red)"}">${ok ? "Correct" : "Incorrect"} — answer: option ${q.key}</b>${provenance(q)}<span class="pill">${esc(p.title)} · Q${q.n}</span></div>
-      ${q.ex ? `<div class="qhtml small" style="margin-top:8px">${q.ex}</div>` : ""}</div>`;
+      ${explHTML(q)}</div>`;
   }
   function choose(k) {
     const ref = at.refs[at.cur];
@@ -626,7 +667,7 @@ function review(id, filter) {
       ${stemHTML(q, lang)}
       <div class="opts">${[1, 2, 3, 4].map(k => `<div class="opt ${k === q.key ? "right" : chosen === k ? "wrong" : ""}"><span class="lbl">${k}</span><span class="oc">${optHTML(q, k, lang)}</span></div>`).join("")}</div>
       <div class="expl"><b>${chosen == null ? "Not answered" : chosen === q.key ? "You answered correctly" : `You chose ${chosen}`} · correct: option ${q.key}</b> <span class="muted small">· time ${fmt(at.time[ref] || 0)}</span>
-        ${q.ex ? `<div class="qhtml small" style="margin-top:8px">${q.ex}</div>` : ""}</div>
+        ${explHTML(q)}</div>
       <div class="actions"><button class="btn" id="pv" ${i === 0 ? "disabled" : ""}>← Previous</button>
         ${st.last === "w" ? `<button class="btn" id="ms">${st.mastered ? "Unmark mastered" : "Mark as mastered"}</button>` : ""}
         <span class="spacer"></span><button class="btn primary" id="nx" ${i === list.length - 1 ? "disabled" : ""}>Next →</button></div>
@@ -733,6 +774,56 @@ function settings() {
   app.querySelector("#ex").onclick = () => { const b = new Blob([JSON.stringify(S)], { type: "application/json" }); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `tgtcs-progress-${new Date().toISOString().slice(0, 10)}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); };
   app.querySelector("#im").onchange = e => { const f = e.target.files[0]; if (!f) return; f.text().then(t => { try { const s = JSON.parse(t); if (s.v !== 1 || !s.attempts) throw 0; S = s; save(); toast("Backup restored"); applyTheme(); route(); } catch (err) { toast("That file is not a valid backup."); } }); };
   app.querySelector("#rs").onclick = async () => { if (await modal("<h2>Reset everything?</h2><p>All attempts and statistics will be deleted. Export a backup first if unsure.</p>", [{ label: "Cancel", value: false }, { label: "Reset", value: true, cls: "primary" }])) { S = fresh(); save(); applyTheme(); toast("Progress reset"); route(); } };
+}
+
+/* ======================================================================= cheat sheets */
+// Section B first, each part in rank order (ranks come from past-paper frequency).
+const SHEETS = (window.DSSSB_SHEETS || []).slice().sort((a, b) => a.part === b.part ? a.rank - b.rank : a.part === "B" ? -1 : 1);
+const sheetPool = s => ALL_REFS.filter(r => s.topics ? s.topics.includes(Q[r].tp) : s.secs.includes(Q[r].sec));
+function sheetAcc(s) {
+  const ta = topicAccuracy(), sa = sectionAccuracy(); let c = 0, w = 0;
+  for (const t of s.topics || []) if (ta[t]) { c += ta[t].c; w += ta[t].w; }
+  for (const x of s.secs || []) if (sa[x]) { c += sa[x].c; w += sa[x].w; }
+  return { c, w };
+}
+const tierPill = s => s.tier === "must" ? '<span class="pill green">Must do</span>' : '<span class="pill">If time permits</span>';
+function sheetDrill(id) { const s = SHEETS.find(x => x.id === id); if (s) startDrill(pickRefs(sheetPool(s), 20, "unseen"), false, "Drill: " + s.title); }
+function sheetsIndex() {
+  const row = s => {
+    const a = sheetAcc(s), tot = a.c + a.w, p = pct(a.c, tot);
+    return `<tr><td class="num">${s.rank}</td><td><a href="#/sheet/${s.id}"><b>${esc(s.title)}</b></a><div class="muted small">${esc(s.freq)}</div></td><td>${tierPill(s)}</td>
+      <td>${tot ? `<div class="row" style="gap:8px"><div class="bar ${p >= 70 ? "green" : p >= 50 ? "amber" : "red"}" style="flex:1;min-width:50px"><i style="width:${p}%"></i></div><span class="small">${p}%</span></div>` : '<span class="muted small">not started</span>'}</td>
+      <td class="num" style="white-space:nowrap"><a class="btn sm" href="#/sheet/${s.id}">Open</a> <button class="btn sm" data-sd="${s.id}">Drill 20</button></td></tr>`;
+  };
+  const table = list => `<table class="t"><thead><tr><th class="num">#</th><th>Sheet</th><th>Priority</th><th style="width:20%">Your accuracy</th><th></th></tr></thead><tbody>${list.map(row).join("")}</tbody></table>`;
+  app.innerHTML = `<div class="row"><h1 style="margin:0">Cheat sheets</h1><span class="spacer"></span><a class="btn sm" href="#/sheet/must">Print must-do sheets</a><a class="btn sm" href="#/sheet/all">Print all</a></div>
+  <p class="muted">Section B sheets are ranked by how many questions each topic had per paper in the seven DoE papers of 2021–2025. Every sheet has three parts: <b>Must do</b>, <b>Most probable questions</b> and <b>If time permits</b>. A <span class="y">2025</span> tag means that fact was asked in that year's paper. Read a sheet, then drill its questions.</p>
+  <div class="card"><h2>Section B: Computer Science + Teaching Methodology</h2><p class="muted small" style="margin-top:0">100 marks. You must score the qualifying percentage here, and ties are broken on Section B.</p>${table(SHEETS.filter(s => s.part === "B"))}</div>
+  <div class="card" style="margin-top:16px"><h2>Section A: general sections</h2><p class="muted small" style="margin-top:0">100 marks, 20 per section, ranked by marks gained per hour of revision.</p>${table(SHEETS.filter(s => s.part === "A"))}</div>`;
+  app.querySelectorAll("[data-sd]").forEach(b => b.onclick = () => sheetDrill(b.dataset.sd));
+}
+function sheetCard(s) {
+  return `<article class="card sheet" id="sheet-${s.id}"><div class="row" style="gap:8px"><h1 style="margin:0">${esc(s.title)}</h1>${tierPill(s)}<span class="pill">${s.part === "B" ? "Section B" : "Section A"} · #${s.rank}</span></div>
+    <p class="muted" style="margin:6px 0 0">${esc(s.freq)}</p>
+    <section class="sblk must"><h2>Must do</h2>${s.must}</section>
+    <section class="sblk prob"><h2>Most probable questions</h2>${s.probable}</section>
+    <section class="sblk later"><h2>If time permits</h2>${s.later}</section></article>`;
+}
+function sheetView(id) {
+  if (id === "must" || id === "all") {
+    const list = SHEETS.filter(s => id === "all" || s.tier === "must");
+    app.innerHTML = `<div class="row noprint" style="margin-bottom:12px"><a class="btn sm" href="#/sheets">← All sheets</a><span class="spacer"></span><span class="muted small">${list.length} sheets</span><button class="btn sm primary" id="sp">Print / save as PDF</button></div>${list.map(sheetCard).join("")}`;
+    app.querySelector("#sp").onclick = () => window.print();
+    return;
+  }
+  const i = SHEETS.findIndex(x => x.id === id);
+  if (i < 0) { sheetsIndex(); return; }
+  const s = SHEETS[i], prev = SHEETS[i - 1], next = SHEETS[i + 1];
+  app.innerHTML = `<div class="row noprint" style="margin-bottom:12px"><a class="btn sm" href="#/sheets">← All sheets</a><span class="spacer"></span><button class="btn sm" id="sp">Print / save as PDF</button><button class="btn sm primary" id="sd">Drill 20 questions</button></div>
+  ${sheetCard(s)}
+  <div class="row noprint" style="margin-top:12px">${prev ? `<a class="btn" href="#/sheet/${prev.id}">← ${esc(prev.title)}</a>` : ""}<span class="spacer"></span>${next ? `<a class="btn" href="#/sheet/${next.id}">${esc(next.title)} →</a>` : ""}</div>`;
+  app.querySelector("#sp").onclick = () => window.print();
+  app.querySelector("#sd").onclick = () => sheetDrill(s.id);
 }
 
 /* Optional local add-on file (not part of the published site). Only looked for when the app
