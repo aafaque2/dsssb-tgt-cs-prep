@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Free practice platform for DSSSB TGT Computer Science: 1,600 real previous-year questions from 8 actual papers, full timed mocks, topic drills and a mistakes list. Works offline; no sign-up.">
+<meta name="description" content="Free practice platform for DSSSB TGT Computer Science: 1,578 real previous-year questions from 8 actual papers, full timed mocks, topic drills, explanations, cheat sheets and a mistakes list. Works offline; no sign-up.">
 <title>DSSSB TGT CS Prep</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232f5fd0'/%3E%3Ctext x='32' y='43' font-size='28' text-anchor='middle' fill='white' font-family='Segoe UI,Arial,sans-serif' font-weight='700'%3ECS%3C/text%3E%3C/svg%3E">
 <style>
@@ -202,7 +202,9 @@ const PAPERS = D.papers;
 const PMAP = Object.fromEntries(PAPERS.map(p => [p.id, p]));
 const Q = {};
 for (const p of PAPERS) for (const q of D.questions[p.id]) { q.pid = p.id; q.ref = p.id + "#" + q.n; Q[q.ref] = q; }
-const ALL_REFS = Object.keys(Q);
+// A later copy of an identical question carries `dup` (the first occurrence's ref). Copies stay
+// in their own paper's mock but are left out of drills and counts, so no question shows up twice.
+const ALL_REFS = Object.keys(Q).filter(r => !Q[r].dup);
 const SECTIONS = ["Reasoning","General Awareness","Arithmetic","English","Hindi","Discipline 1","Discipline 2","Discipline 3","Discipline 4","Discipline 5","Teaching Methodology"];
 const PART_A = SECTIONS.slice(0, 5), PART_B = SECTIONS.slice(5);
 const QUAL = { UR: 40, EWS: 40, OBC: 35, SC: 30, ST: 30, PwBD: 30 };
@@ -391,8 +393,15 @@ function mocks() {
 }
 function startMock(pid) {
   const p = PMAP[pid];
-  const at = { id: uid("m"), kind: "mock", pid, title: p.title, refs: D.questions[pid].map(q => q.ref), answers: {}, marked: {}, visited: {}, time: {}, cur: 0, total: 7200, remaining: 7200, instant: false, started: Date.now(), submitted: false, lang: "en" };
+  // A section the source copied from another paper (`borrowed`) is shown as the original questions
+  const refs = D.questions[pid].map(q => q.borrowed && Q[q.dup] ? q.dup : q.ref);
+  const at = { id: uid("m"), kind: "mock", pid, title: p.title, refs, answers: {}, marked: {}, visited: {}, time: {}, cur: 0, total: 7200, remaining: 7200, instant: false, started: Date.now(), submitted: false, lang: "en" };
   S.attempts[at.id] = at; save(); go("#/exam/" + at.id);
+}
+// Label for a mock question that really belongs to another paper (a copied section).
+function foreignNote(q, at) {
+  const orig = q.borrowed && Q[q.dup] ? Q[q.dup] : at.pid && q.pid !== at.pid ? q : null;
+  return orig ? `<div class="note" style="margin:0 0 10px">Not from this shift: this is <b>${esc(PMAP[orig.pid].title)} · Q${orig.n}</b>. The source copied that paper's ${esc(orig.sec)} section into this one, and this shift's own ${esc(orig.sec)} section isn't available.</div>` : "";
 }
 
 /* ======================================================================= practice builder */
@@ -523,6 +532,7 @@ function runner(id) {
         ${q.hi ? `<button class="btn sm" id="lang">${lang === "hi" ? "English" : "हिंदी"}</button>` : ""}
         <button class="btn sm" id="zm" title="Smaller">A−</button><button class="btn sm" id="zp" title="Larger">A+</button>
       </div>
+      ${isMock ? foreignNote(q, at) : ""}
       ${stemHTML(q, lang)}
       <div class="opts">${[1, 2, 3, 4].map(k => {
         let cls = chosen === k ? "sel" : "";

@@ -1,6 +1,6 @@
 # DSSSB TGT Computer Science: real PYQ practice
 
-A free practice platform for the **DSSSB TGT Computer Science** exam (Post Code **41/26**, Advt. **03/2026**). It is built **only from real previous-year papers**: 1,600 questions from 8 actual DSSSB shifts, with full timed mocks, topic drills, a mistakes notebook, explanations for every official-key question, and 21 ranked cheat sheets. There's no sign-up, and it works offline.
+A free practice platform for the **DSSSB TGT Computer Science** exam (Post Code **41/26**, Advt. **03/2026**). It is built **only from real previous-year papers**: 1,578 unique questions from 8 actual DSSSB shifts, with full timed mocks, topic drills, a mistakes notebook, explanations for every official-key question, and 21 ranked cheat sheets. There's no sign-up, and it works offline.
 
 ### ▶ **Live site: https://aafaque2.github.io/dsssb-tgt-cs-prep/**
 
@@ -42,7 +42,7 @@ Many TGT CS "PYQ" collections are re-typed with errors, attributed to the wrong 
 
 ![A cheat sheet: must-do facts with year tags for what was actually asked](screenshots/cheat-sheet.png)
 
-## Question bank: 1,600 questions
+## Question bank: 1,578 unique questions
 
 | Paper | Post code | Department | Format | Answer key |
 |---|---|---|---|---|
@@ -57,6 +57,11 @@ Many TGT CS "PYQ" collections are re-typed with errors, attributed to the wrong 
 
 Post 41/26 is a Directorate of Education post, so those papers come first. The 2024 paper was for NDMC, which uses a CBSE-style syllabus. Its Section A is the same style, though.
 
+The 8 papers have 1,600 question slots but 1,578 unique questions:
+- **7 Aug 2021 · Shift 2, English (Q61–80).** The source's English section is a copy of 1 Aug 2021 · Shift 2's, question for question, and the official 1 Aug response sheet confirms those questions belong to 1 Aug. That shift's real English section isn't available. Its mock therefore shows the 1 Aug questions, clearly labelled, so it stays a full 200-question test.
+- **Two Section B questions** in that paper (Q117, Q118) are also identical to 1 Aug 2021 · Shift 2 Q160 and Q159. DSSSB does reuse questions within an exam cycle, so these stay in the mock.
+- Copies are left out of drills and counts, so you never practise the same question twice.
+
 ### How the answer keys were obtained
 
 - **Response-sheet papers (official ✓).**
@@ -67,7 +72,7 @@ Post 41/26 is a Directorate of Education post, so those papers come first. The 2
   - Keys are as published by the transcription source.
   - For 1 Aug 2021, the source's keys were compared with the official response-sheet key and matched in all 71 questions that could be compared.
 
-### What Section B actually asks (7 Directorate of Education papers, 700 questions, auto-tagged)
+### What Section B actually asks (7 Directorate of Education papers, 698 unique questions, auto-tagged)
 
 | Topic | Share | | Topic | Share |
 |---|---|---|---|---|
@@ -78,7 +83,7 @@ Post 41/26 is a Directorate of Education post, so those papers come first. The 2
 | C / C++ & programming basics | 7% | | Web technologies | 4% |
 | Data structures & algorithms | 7% | | Computer organisation | 4% |
 
-About 8% of questions fit no single topic. Software engineering, graphics, physics/electronics, Java, OOP and .NET make up the rest. Python appears in only 2 of these 700 questions.
+About 8% of questions fit no single topic. Software engineering, graphics, physics/electronics, Java, OOP and .NET make up the rest. Python appears in only 2 of these 698 questions.
 
 ## Exam at a glance (Post 41/26)
 
@@ -107,7 +112,7 @@ There are no accounts, cookies, analytics or third-party requests: the site is p
 
 - Transcribed papers can contain transcription slips (e.g. a missing `#include` header or a missing table). They are labelled **Source key**.
 - Topic tags come from keyword rules on the question text and are approximate.
-- Explanations cover the 800 official-key questions; the 800 transcribed questions have answer keys only.
+- Explanations cover the 800 official-key questions; the transcribed questions have answer keys only.
 - Cheat-sheet rankings come from the auto-tagged topic counts, so they are a guide, not a guarantee of what will be asked.
 - Not included yet: 24 Jun 2023 Shift 2, 12 Sep 2025 Shifts 2–3, 13 Sep 2025 Shift 3, and the 2017 paper.
 
