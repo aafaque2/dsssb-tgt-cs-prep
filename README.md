@@ -1,6 +1,6 @@
 # DSSSB TGT Computer Science: real PYQ practice
 
-A free practice platform for the **DSSSB TGT Computer Science** exam (Post Code **41/26**, Advt. **03/2026**). It is built **only from real previous-year papers**: 1,578 unique questions from 8 actual DSSSB shifts, with full timed mocks, topic drills, a mistakes notebook, explanations for every official-key question, and 21 ranked cheat sheets. There's no sign-up, and it works offline.
+A free practice platform for the **DSSSB TGT Computer Science** exam (Post Code **41/26**, Advt. **03/2026**). It is built **only from real previous-year papers**: 1,578 unique questions from 8 actual DSSSB shifts, with full timed mocks, topic drills, a mistakes notebook, an explanation for every question, and 21 ranked cheat sheets. There's no sign-up, and it works offline.
 
 ### ▶ **Live site: https://aafaque2.github.io/dsssb-tgt-cs-prep/**
 
@@ -22,9 +22,10 @@ Many TGT CS "PYQ" collections are re-typed with errors, attributed to the wrong 
   - Qualifying check from Advt. 03/2026: 40 / 35 / 30 % applied to Section B *and* to the total.
   - Comparison with the last Directorate of Education cut-off.
 - **Practice drills**: pick questions by section, by Section B topic (auto-tagged) or by search term, with instant feedback or a timer. "Unseen first" and "wrong before" modes are available.
-- **Explanations for all 800 official-key questions**, written for this site. They appear in drill feedback and in mock reviews.
-  - The answer shown is always DSSSB's official key.
-  - Where the explanation argues that the key is wrong or ambiguous, it is flagged **key disputed ⚠** (18 questions) and gives both answers.
+- **An explanation for every question** (all 1,600), written for this site. Explanations appear in drill feedback and in mock reviews.
+  - The answer shown is always the paper's key: DSSSB's official key, or the source's key for the transcribed papers.
+  - When an explanation argues that the key is wrong or ambiguous, it is flagged **key disputed ⚠** and gives the correct working.
+  - 32 questions are flagged: 18 in the official-key papers and 14 in the transcribed ones.
 - **Cheat sheets: 21 of them, ranked by importance.**
   - The 16 Section B sheets are ordered by how many questions each topic had per paper in the seven DoE papers; the top 8 are *Must do*, the rest *If time permits*.
   - The 5 Section A sheets cover the general sections.
@@ -115,9 +116,10 @@ There are no accounts, cookies, analytics or third-party requests: the site is p
 
 ## Known limitations
 
-- Transcribed papers can contain transcription slips (e.g. a missing `#include` header or a missing table). They are labelled **Source key**.
+- Transcribed papers can contain transcription slips (e.g. a missing `#include` header or a missing comma in code). They are labelled **Source key**.
+  - The reading-comprehension passages (English Q76–80, Hindi Q96–100) and lost underlines have been restored from the source pages.
+  - 6 questions whose source is incomplete or damaged carry a note above the question: 12 Sep 2025 Q175 and Q177; 1 Aug 2021 Q60; 7 Aug 2021 Shift 1 Q137; 7 Aug 2021 Shift 2 Q15 and Q52.
 - Topic tags come from keyword rules on the question text and are approximate.
-- Explanations cover the 800 official-key questions; the transcribed questions have answer keys only.
 - Cheat-sheet rankings come from the auto-tagged topic counts, so they are a guide, not a guarantee of what will be asked.
 - Not included yet: 24 Jun 2023 Shift 2, 12 Sep 2025 Shifts 2–3, 13 Sep 2025 Shift 3, and the 2017 paper.
 
