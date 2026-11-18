@@ -135,6 +135,15 @@ select,input[type=date],input[type=number],input[type=text]{font:inherit;color:v
 .legend{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:.8rem;margin-top:10px}
 .legend span{display:flex;align-items:center;gap:6px}
 .legend i{width:14px;height:14px;border-radius:4px;display:inline-block;border:1px solid var(--border)}
+/* answer review: marked = purple dot, outside the chosen filter = faded */
+.pal button.mkd::before{content:"";position:absolute;right:3px;top:3px;width:8px;height:8px;border-radius:50%;background:#6d3fd6;border:1px solid #fff}
+.pal button.dim{opacity:.3}
+.legend i.dot{background:var(--surface2);position:relative}
+.legend i.dot::after{content:"";position:absolute;right:1px;top:1px;width:6px;height:6px;border-radius:50%;background:#6d3fd6}
+@media (min-width:961px){.exam .side>.card{position:sticky;top:68px;max-height:calc(100vh - 84px);overflow:auto}.palbtn{display:none!important}}
+.tscroll{overflow-x:auto}
+.nowrap,.acts{white-space:nowrap}
+.acts .btn{margin:2px 0}
 .kbd{font-family:ui-monospace,Consolas,monospace;font-size:.78rem;border:1px solid var(--border);border-bottom-width:2px;border-radius:5px;padding:0 5px;background:var(--surface2)}
 .hide{display:none!important}
 .center{text-align:center}
@@ -169,6 +178,7 @@ select,input[type=date],input[type=number],input[type=text]{font:inherit;color:v
   a{color:inherit;text-decoration:none}
 }
 @media (max-width:560px){.brand small{display:none}header.top .wrap{gap:8px}nav.tabs a{padding:8px 8px}h1{font-size:1.3rem}
+  .hm{display:none}.acts{white-space:normal}table.t th,table.t td{padding:7px 6px}
   .card.sheet{padding:12px}.sheet .sblk{padding-left:10px}.sheet ul{padding-left:16px}.sheet table.t{font-size:.84rem}.sheet table.t th,.sheet table.t td{padding:4px 5px}}
 </style>
 </head>
@@ -181,6 +191,7 @@ select,input[type=date],input[type=number],input[type=text]{font:inherit;color:v
     <a href="#/practice" data-t="practice">Practice</a>
     <a href="#/sheets" data-t="sheets">Cheat sheets</a>
     <a href="#/mistakes" data-t="mistakes">Mistakes</a>
+    <a href="#/history" data-t="history">History</a>
     <a href="#/facts" data-t="facts">Exam facts</a>
     <a href="#/settings" data-t="settings">Settings</a>
   </nav>
@@ -215,11 +226,31 @@ const MOCK_ORDER = ["2025-09-12-s1","2023-06-24-s3","2023-06-25-s1","2023-06-25-
 /* ======================================================================= store */
 const KEY = "tgtcs41.v1";
 function fresh() { return { v: 1, settings: { examDate: "2026-11-27", category: "UR", theme: "auto", zoom: 1, lang: "en" }, attempts: {}, qs: {} }; }
-let S = (() => { try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.v === 1) { s.settings = Object.assign(fresh().settings, s.settings || {}); s.attempts = s.attempts || {}; s.qs = s.qs || {}; return s; } } catch (e) {} return fresh(); })();
+function parseState(raw) { try { const s = JSON.parse(raw); if (s && s.v === 1) { s.settings = Object.assign(fresh().settings, s.settings || {}); s.attempts = s.attempts || {}; s.qs = s.qs || {}; return s; } } catch (e) {} return null; }
+const readStored = () => { try { return localStorage.getItem(KEY); } catch (e) { return null; } };
+let S = parseState(readStored()) || fresh();
 let saveWarned = false;
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { if (!saveWarned) { saveWarned = true; toast("Progress could not be saved in this browser. Use Settings → Export backup."); } } }
 window.addEventListener("pagehide", save);
-document.addEventListener("visibilitychange", () => { if (document.hidden) save(); });
+document.addEventListener("visibilitychange", () => { if (document.hidden) save(); else refreshIfStale(); });
+window.addEventListener("focus", () => refreshIfStale());
+/* Several open tabs: each keeps its own copy of S, and a tab saves when it is hidden or closed.
+   Without this, an older tab would overwrite attempts saved by a newer one. Every tab therefore
+   adopts what another tab saved, keeping only the test it is running itself (LIVE). */
+let LIVE = null, staleView = false;
+window.addEventListener("storage", e => {
+  if (e.storageArea !== localStorage || (e.key !== null && e.key !== KEY)) return;
+  const s = e.newValue == null ? fresh() : parseState(e.newValue);
+  if (!s) return;
+  if (LIVE) s.attempts[LIVE.id] = LIVE;
+  S = s; applyTheme(); staleView = true;
+});
+function refreshIfStale() {
+  if (!staleView || document.querySelector(".modal-bg")) return;
+  staleView = false;
+  const view = (location.hash || "#/home").split("/")[1];
+  if (view !== "exam" && view !== "settings") route(); // never redraw a running test or a form
+}
 
 /* ======================================================================= utils */
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -230,12 +261,18 @@ const today = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
 const daysLeft = () => { const d = new Date(S.settings.examDate + "T00:00:00"); return Math.round((d - today()) / 864e5); };
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const uid = p => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const shortDate = t => new Date(t).toLocaleDateString(undefined, { day: "numeric", month: "short" });
+const whenStr = t => new Date(t).toLocaleString(undefined, { day: "numeric", month: "short", ...(new Date(t).getFullYear() === new Date().getFullYear() ? {} : { year: "numeric" }), hour: "numeric", minute: "2-digit" });
+// first index of each run of one section, e.g. [{ s: "Reasoning", i: 0 }, { s: "General Awareness", i: 20 }, …]
+const sectionStarts = refs => { const out = []; refs.forEach((r, i) => { const s = Q[r].sec; if (!out.length || out[out.length - 1].s !== s) out.push({ s, i }); }); return out; };
 function toast(msg) { const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3200); }
 function modal(html, buttons) {
   return new Promise(res => {
     const bg = document.createElement("div"); bg.className = "modal-bg";
     bg.innerHTML = `<div class="modal" role="dialog" aria-modal="true">${html}<div class="row" style="justify-content:flex-end;margin-top:16px">${buttons.map((b, i) => `<button class="btn ${b.cls || ""}" data-i="${i}">${esc(b.label)}</button>`).join("")}</div></div>`;
-    bg.addEventListener("click", e => { const b = e.target.closest("button[data-i]"); if (b) { bg.remove(); res(buttons[+b.dataset.i].value); } else if (e.target === bg) { bg.remove(); res(null); } });
+    // modal.form keeps the state of any checkbox with an id, for callers that ask an extra question
+    const done = v => { modal.form = Object.fromEntries([...bg.querySelectorAll("input[type=checkbox][id]")].map(i => [i.id, i.checked])); bg.remove(); res(v); };
+    bg.addEventListener("click", e => { const b = e.target.closest("button[data-i]"); if (b) done(buttons[+b.dataset.i].value); else if (e.target === bg) done(null); });
     document.body.appendChild(bg); bg.querySelector("button[data-i]")?.focus();
   });
 }
@@ -263,6 +300,7 @@ function score(at) {
   const r = { all: mk(), A: mk(), B: mk(), sec: {} };
   for (const ref of at.refs) {
     const q = Q[ref], a = at.answers[ref], t = at.time[ref] || 0;
+    if (!q) continue; // a question removed from the data since the attempt was saved
     const sec = r.sec[q.sec] || (r.sec[q.sec] = mk());
     for (const b of [r.all, r[q.part], sec]) {
       b.n++; b.time += t;
@@ -302,10 +340,10 @@ function go(h) { if (location.hash === h) route(); else location.hash = h; }
 window.addEventListener("hashchange", route);
 function route() {
   if (cleanup) { try { cleanup(); } catch (e) {} cleanup = null; }
-  const [, view, id, extra] = (location.hash || "#/home").split("/");
-  document.querySelectorAll("#tabs a").forEach(a => a.classList.toggle("on", a.dataset.t === (view === "sheet" ? "sheets" : view)));
+  const [, view, id, extra, qn] = (location.hash || "#/home").split("/");
+  document.querySelectorAll("#tabs a").forEach(a => a.classList.toggle("on", a.dataset.t === (view === "sheet" ? "sheets" : view === "result" || view === "review" ? "history" : view)));
   window.scrollTo(0, 0);
-  const v = { home, mocks, practice, mistakesView, facts, settings, sheets: sheetsIndex, sheet: () => sheetView(id), exam: () => runner(id), result: () => result(id), review: () => review(id, extra) };
+  const v = { home, mocks, practice, mistakesView, facts, settings, history: historyView, sheets: sheetsIndex, sheet: () => sheetView(id), exam: () => runner(id), result: () => result(id), review: () => review(id, extra, +qn || 0) };
   const fn = view === "mistakes" ? v.mistakesView : v[view];
   (fn || home)();
 }
@@ -318,6 +356,7 @@ function home() {
   const tc = Object.values(S.qs).reduce((a, s) => a + s.c, 0), tw = Object.values(S.qs).reduce((a, s) => a + s.w, 0);
   const mocksDone = Object.values(S.attempts).filter(a => a.kind === "mock" && a.submitted).sort((a, b) => b.ended - a.ended);
   const live = Object.values(S.attempts).filter(a => !a.submitted).sort((a, b) => b.started - a.started);
+  const doneAll = Object.values(S.attempts).filter(a => a.submitted).length;
   const weak = SECTIONS.map(s => ({ s, ...acc[s], a: acc[s].c + acc[s].w ? acc[s].c / (acc[s].c + acc[s].w) : null })).filter(x => x.a != null && x.c + x.w >= 5).sort((a, b) => a.a - b.a).slice(0, 3);
   const nextPaper = MOCK_ORDER.find(id => !mocksDone.some(m => m.pid === id));
   app.innerHTML = `
@@ -348,11 +387,12 @@ function home() {
       </tbody></table>
     </div>
   </div>
+  ${doneAll ? `<div class="card" style="margin-top:16px"><div class="row" style="margin-bottom:8px"><h2 style="margin:0">Mock history</h2><span class="spacer"></span><a class="btn sm" href="#/history">All ${doneAll} attempt${doneAll > 1 ? "s" : ""}${doneAll > mocksDone.length ? ", with drills" : ""} →</a></div>
+    ${mocksDone.length ? `<div class="tscroll">${historyTable(mocksDone.slice(0, 5))}</div>` : `<p class="muted small" style="margin:0">No full mock yet. Your drills are listed under History.</p>`}</div>` : ""}
   <div class="card" style="margin-top:16px">
     <h2>Suggested plan for the days left</h2>
     ${planHTML(dl, mocksDone)}
   </div>
-  ${mocksDone.length ? `<div class="card" style="margin-top:16px"><h2>Mock history</h2>${historyTable(mocksDone)}</div>` : ""}
   <p class="footer-note">All ${ALL_REFS.length} questions are from real DSSSB TGT Computer Science papers. Questions from official response sheets are shown exactly as printed, with the official key. Details are under <a href="#/facts">Exam facts</a>.<br>Free and independent — not affiliated with DSSSB. Your progress stays in this browser. Found a wrong key? <a href="${REPO}/issues" target="_blank" rel="noopener">Report it on GitHub</a>.</p>`;
 }
 function historyTable(list) {
@@ -383,11 +423,13 @@ function mocks() {
   app.innerHTML = `<h1>Full mock tests</h1>
   <p class="muted">Each paper is a complete real DSSSB TGT Computer Science shift: 200 questions, 120 minutes, +1 / −0.25, in the original section order. Directorate of Education papers come first because Post 41/26 is a DoE post.</p>
   <div class="list">${MOCK_ORDER.map(id => {
-    const p = PMAP[id]; const atts = done.filter(a => a.pid === id); const best = atts.filter(a => a.submitted).map(a => score(a).all.net); const live = atts.find(a => !a.submitted);
+    const p = PMAP[id]; const atts = done.filter(a => a.pid === id); const live = atts.find(a => !a.submitted);
+    const fin = atts.filter(a => a.submitted).sort((a, b) => b.ended - a.ended).map(a => ({ a, net: score(a).all.net })); const best = fin.map(x => x.net);
+    const past = fin.length ? `<div class="small" style="margin-top:6px">Your attempts: ${fin.slice(0, 4).map(x => `<a href="#/result/${x.a.id}">${esc(shortDate(x.a.ended))} · ${n2(x.net)}</a>`).join(" · ")}${fin.length > 4 ? ` · <a href="#/history">${fin.length - 4} more</a>` : ""}</div>` : "";
     return `<div class="card paperrow"><div class="meta">
       <div class="row" style="gap:8px"><b style="font-size:1.05rem">${esc(p.title)}</b><span class="pill blue">Post ${esc(p.post)}</span>${p.kind === "crop" ? '<span class="pill green">Official key ✓</span>' : '<span class="pill amber">Transcribed · source key</span>'}${best.length ? `<span class="pill">best ${n2(Math.max(...best))}/200</span>` : ""}</div>
       <div class="muted small" style="margin-top:4px">${esc(p.dept)} · ${esc(p.time)}</div>
-      <div class="small" style="margin-top:4px">${esc(p.source)}. ${esc(p.keyNote)} ${p.sectionNote ? esc(p.sectionNote) : ""}</div>
+      <div class="small" style="margin-top:4px">${esc(p.source)}. ${esc(p.keyNote)} ${p.sectionNote ? esc(p.sectionNote) : ""}</div>${past}
     </div><div class="row">${live ? `<a class="btn primary" href="#/exam/${live.id}">Resume</a>` : ""}<button class="btn ${live ? "" : "primary"}" onclick="startMock('${id}')">${atts.length ? "New attempt" : "Start"}</button></div></div>`;
   }).join("")}</div>`;
 }
@@ -484,15 +526,15 @@ function runner(id) {
   if (!at) { app.innerHTML = `<div class="card">Test not found. <a href="#/home">Home</a></div>`; return; }
   if (at.submitted) { go("#/result/" + id); return; }
   let tick = null, lastSave = 0;
+  LIVE = at;
   const isMock = at.kind === "mock";
-  const secsOf = () => { const out = []; at.refs.forEach((r, i) => { const s = Q[r].sec; if (!out.length || out[out.length - 1].s !== s) out.push({ s, i }); }); return out; };
-  const secList = secsOf();
+  const secList = sectionStarts(at.refs);
   app.innerHTML = `
   <div class="examhead">
     <div><b>${esc(at.title)}</b><div class="muted small">${isMock ? "Full mock · 200 questions · +1 / −0.25" : at.instant ? "Practice · instant feedback" : "Timed practice · +1 / −0.25"}</div></div>
     <span class="spacer"></span>
     ${at.total ? `<span class="timer" id="tm"></span><button class="btn sm" id="pz">Pause</button>` : ""}
-    <button class="btn sm" id="pal">Palette</button>
+    <button class="btn sm palbtn" id="pal">Palette</button>
     <button class="btn sm primary" id="sub">${isMock || at.timed ? "Submit test" : "Finish"}</button>
   </div>
   ${isMock && secList.length > 1 ? `<div class="sectabs" id="tabsec">${secList.map(x => `<button data-i="${x.i}">${esc(x.s)}</button>`).join("")}</div>` : ""}
@@ -612,13 +654,14 @@ function runner(id) {
     persist();
   }, 1000);
   drawTimer(); drawQ();
-  cleanup = () => { clearInterval(tick); document.removeEventListener("keydown", onKey); save(); };
+  cleanup = () => { clearInterval(tick); document.removeEventListener("keydown", onKey); save(); LIVE = null; };
 }
 
 /* ======================================================================= result */
 function result(id) {
   const at = S.attempts[id];
-  if (!at) { app.innerHTML = `<div class="card">Result not found. <a href="#/home">Home</a></div>`; return; }
+  if (!at) { app.innerHTML = `<div class="card">This attempt isn't saved in this browser (it may have been deleted). <a href="#/history">See all attempts</a></div>`; return; }
+  if (!at.submitted) { go("#/exam/" + id); return; }
   const r = score(at); const cat = S.settings.category; const th = QUAL[cat];
   const isMock = at.kind === "mock";
   const accCell = b => b.att ? pct(b.c, b.att) + "%" : "—";
@@ -633,7 +676,8 @@ function result(id) {
     </div>`;
   }
   const wrong = at.refs.filter(x => at.answers[x] != null && at.answers[x] !== Q[x].key).length;
-  app.innerHTML = `<h1>${esc(at.title)} — result</h1>
+  app.innerHTML = `<div class="row"><h1 style="margin:0">${esc(at.title)} — result</h1><span class="spacer"></span><a class="btn sm" href="#/history">← All attempts</a></div>
+  <p class="muted small" style="margin:4px 0 14px">${isMock ? "Full mock" : at.timed ? "Timed drill" : "Drill"} · submitted ${esc(whenStr(at.ended || at.started))} · saved in this browser until you delete it</p>
   <div class="grid g4">
     <div class="card stat"><div class="v">${n2(r.all.net)}<span class="muted small"> / ${r.all.n}</span></div><div class="l">net score (+1 / −0.25)</div></div>
     <div class="card stat"><div class="v">${r.all.c} <span class="small" style="color:var(--green)">✓</span> ${r.all.w} <span class="small" style="color:var(--red)">✗</span></div><div class="l">${r.all.n - r.all.att} not answered</div></div>
@@ -655,42 +699,175 @@ function result(id) {
     <span class="spacer"></span>
     <button class="btn danger" id="del">Delete this attempt</button>
   </div>`;
-  app.querySelector("#del").onclick = async () => { if (await modal("<h2>Delete this attempt?</h2><p>Its answers are removed from history. Question accuracy already recorded stays.</p>", [{ label: "Cancel", value: false }, { label: "Delete", value: true, cls: "primary" }])) { delete S.attempts[id]; save(); go("#/home"); } };
+  app.querySelector("#del").onclick = async () => { if (await deleteAttempts([id])) go("#/history"); };
 }
 
 /* ======================================================================= review */
-function review(id, filter) {
+const REVIEW_FILTERS = {
+  all: ["All", () => true],
+  wrong: ["Wrong", (at, r) => at.answers[r] != null && at.answers[r] !== Q[r].key],
+  skipped: ["Not answered", (at, r) => at.answers[r] == null],
+  marked: ["Marked", (at, r) => !!at.marked[r]],
+};
+// The answer review keeps the exam's layout: question on the left, the numbered palette and the
+// section tabs for jumping around. The filter decides what Previous / Next step through; the
+// palette always shows every question (those outside the filter faded).
+function review(id, filter, qn) {
   const at = S.attempts[id];
-  if (!at) { app.innerHTML = `<div class="card">Not found. <a href="#/home">Home</a></div>`; return; }
-  filter = filter || "all";
-  const want = r => filter === "all" || (filter === "wrong" && at.answers[r] != null && at.answers[r] !== Q[r].key) || (filter === "skipped" && at.answers[r] == null) || (filter === "marked" && at.marked[r]);
-  const list = at.refs.filter(want);
-  let i = 0, lang = "en";
-  const draw = () => {
-    if (!list.length) { app.innerHTML = `<h1>Review</h1><div class="card">Nothing here. <a href="#/result/${id}">Back to result</a></div>`; return; }
-    const ref = list[i], q = Q[ref], chosen = at.answers[ref], p = PMAP[q.pid];
-    const st = S.qs[ref] || {};
-    app.innerHTML = `<div class="row"><h1 style="margin:0">Review — ${esc(at.title)}</h1><span class="spacer"></span><a class="btn sm" href="#/result/${id}">Back to result</a></div>
-    <div class="row" style="margin:12px 0">${["all", "wrong", "skipped", "marked"].map(f => `<a class="btn sm ${f === filter ? "primary" : ""}" href="#/review/${id}/${f}">${f === "all" ? "All" : f === "wrong" ? "Wrong" : f === "skipped" ? "Not answered" : "Marked"}</a>`).join("")}<span class="spacer"></span><span class="muted small">${i + 1} of ${list.length}</span></div>
-    <div class="card">
-      <div class="qhead"><b>Question ${at.refs.indexOf(ref) + 1}</b><span class="pill blue">${esc(q.sec)}</span>${q.tp ? `<span class="pill purple">${esc(q.tp)}</span>` : ""}<span class="pill">${esc(p.title)} · Q${q.n}</span>${provenance(q)}<span class="spacer"></span>${q.hi ? `<button class="btn sm" id="lang">${lang === "hi" ? "English" : "हिंदी"}</button>` : ""}</div>
+  if (!at) { app.innerHTML = `<div class="card">This attempt isn't saved in this browser (it may have been deleted). <a href="#/history">See all attempts</a></div>`; return; }
+  if (!at.submitted) { go("#/exam/" + id); return; }
+  const refs = at.refs.filter(r => Q[r]);
+  if (!REVIEW_FILTERS[filter]) filter = "all";
+  const want = r => REVIEW_FILTERS[filter][1](at, r);
+  const firstMatch = () => Math.max(0, refs.findIndex(want));
+  let cur = qn >= 1 && qn <= refs.length ? qn - 1 : firstMatch(), lang = "en", nav = {};
+  const isMock = at.kind === "mock", sc = score(at), secList = sectionStarts(refs);
+  app.innerHTML = `
+  <div class="examhead">
+    <div><b>Review: ${esc(at.title)}</b><div class="muted small">Submitted ${esc(whenStr(at.ended || at.started))} · net ${n2(sc.all.net)} / ${sc.all.n} · ${sc.all.c} right, ${sc.all.w} wrong, ${sc.all.n - sc.all.att} not answered</div></div>
+    <span class="spacer"></span>
+    <button class="btn sm palbtn" id="pal">Palette</button>
+    <a class="btn sm" href="#/result/${id}">Result</a>
+    <a class="btn sm" href="#/history">All attempts</a>
+  </div>
+  <div class="row" id="rf" style="gap:6px;margin-bottom:12px"></div>
+  ${isMock && secList.length > 1 ? `<div class="sectabs" id="tabsec">${secList.map(x => `<button data-i="${x.i}">${esc(x.s)}</button>`).join("")}</div>` : ""}
+  <div class="exam">
+    <div><div class="card" id="qbox"></div></div>
+    <div class="side" id="side"><div class="card">
+      <div class="row" style="margin-bottom:8px"><b>Questions</b><span class="spacer"></span><span class="small muted" id="cnt"></span></div>
+      <div class="pal" id="palg"></div>
+      <div class="legend"><span><i style="background:#1f9d55"></i>Correct</span><span><i style="background:#e0483e"></i>Wrong</span><span><i style="background:var(--surface2)"></i>Not answered</span><span><i class="dot"></i>Marked for review</span></div>
+      <p class="small muted" style="margin-top:10px">Faded numbers are outside the filter you picked, and you can still open them. Keys: <span class="kbd">←</span>/<span class="kbd">→</span></p>
+    </div></div>
+  </div>`;
+  const qbox = app.querySelector("#qbox"), palg = app.querySelector("#palg"), side = app.querySelector("#side");
+  const drawFilters = () => { app.querySelector("#rf").innerHTML = Object.entries(REVIEW_FILTERS).map(([f, [label, fn]]) => `<button class="btn sm ${f === filter ? "primary" : ""}" data-f="${f}">${label} · ${refs.filter(r => fn(at, r)).length}</button>`).join(""); };
+  function draw() {
+    const ref = refs[cur], q = Q[ref], chosen = at.answers[ref], p = PMAP[q.pid], st = S.qs[ref] || {};
+    const list = refs.reduce((a, r, i) => (want(r) && a.push(i), a), []), pos = list.indexOf(cur), label = REVIEW_FILTERS[filter][0];
+    nav = { prev: list.filter(i => i < cur).pop(), next: list.find(i => i > cur) };
+    qbox.innerHTML = `
+      <div class="qhead"><b>Question ${cur + 1}</b><span class="muted small">of ${refs.length}</span><span class="pill blue">${esc(q.sec)}</span>${q.tp ? `<span class="pill purple">${esc(q.tp)}</span>` : ""}<span class="pill">${esc(p.title)} · Q${q.n}</span>${provenance(q)}${at.marked[ref] ? ' <span class="pill purple">Marked for review</span>' : ""}
+        <span class="spacer"></span>
+        ${q.hi ? `<button class="btn sm" id="lang">${lang === "hi" ? "English" : "हिंदी"}</button>` : ""}
+        <button class="btn sm" id="zm" title="Smaller">A−</button><button class="btn sm" id="zp" title="Larger">A+</button>
+      </div>
+      ${isMock ? foreignNote(q, at) : ""}
       ${stemHTML(q, lang)}
       <div class="opts">${[1, 2, 3, 4].map(k => `<div class="opt ${k === q.key ? "right" : chosen === k ? "wrong" : ""}"><span class="lbl">${k}</span><span class="oc">${optHTML(q, k, lang)}</span></div>`).join("")}</div>
-      <div class="expl"><b>${chosen == null ? "Not answered" : chosen === q.key ? "You answered correctly" : `You chose ${chosen}`} · correct: option ${q.key}</b> <span class="muted small">· time ${fmt(at.time[ref] || 0)}</span>
+      <div class="expl"><b style="color:${chosen == null ? "var(--text)" : chosen === q.key ? "var(--green)" : "var(--red)"}">${chosen == null ? "Not answered" : chosen === q.key ? "You answered correctly" : `You chose ${chosen}`} · correct: option ${q.key}</b> <span class="muted small">· time ${fmt(at.time[ref] || 0)}</span>
         ${explHTML(q)}</div>
-      <div class="actions"><button class="btn" id="pv" ${i === 0 ? "disabled" : ""}>← Previous</button>
+      <div class="actions"><button class="btn" id="pv" ${nav.prev == null ? "disabled" : ""}>← Previous</button>
         ${st.last === "w" ? `<button class="btn" id="ms">${st.mastered ? "Unmark mastered" : "Mark as mastered"}</button>` : ""}
-        <span class="spacer"></span><button class="btn primary" id="nx" ${i === list.length - 1 ? "disabled" : ""}>Next →</button></div>
-    </div>`;
-    app.querySelector("#pv").onclick = () => { i--; draw(); };
-    app.querySelector("#nx").onclick = () => { i++; draw(); };
-    const ms = app.querySelector("#ms"); if (ms) ms.onclick = () => { st.mastered = !st.mastered; save(); draw(); };
-    const lg = app.querySelector("#lang"); if (lg) lg.onclick = () => { lang = lang === "hi" ? "en" : "hi"; draw(); };
+        <span class="spacer"></span>
+        ${filter === "all" ? "" : `<span class="muted small">${!list.length ? `No “${esc(label)}” questions` : pos >= 0 ? `${esc(label)}: ${pos + 1} of ${list.length}` : `Not in “${esc(label)}”`}</span>`}
+        <button class="btn primary" id="nx" ${nav.next == null ? "disabled" : ""}>Next →</button></div>`;
+    palg.innerHTML = refs.map((r, i) => { const a = at.answers[r]; return `<button class="${a == null ? "" : a === Q[r].key ? "r" : "w"}${at.marked[r] ? " mkd" : ""}${want(r) ? "" : " dim"}${i === cur ? " cur" : ""}" data-i="${i}" title="${esc(Q[r].sec)}">${i + 1}</button>`; }).join("");
+    app.querySelector("#cnt").textContent = filter === "all" ? `${refs.length} questions` : `${list.length} ${label.toLowerCase()}`;
+    app.querySelectorAll("#tabsec button").forEach((b, k) => { const start = +b.dataset.i, end = k + 1 < secList.length ? secList[k + 1].i : refs.length; b.classList.toggle("on", cur >= start && cur < end); });
+    try { history.replaceState(null, "", `#/review/${id}/${filter}/${cur + 1}`); } catch (e) {} // a reload comes back to this question
+  }
+  const move = i => { cur = Math.max(0, Math.min(refs.length - 1, i)); draw(); window.scrollTo({ top: 0 }); };
+  qbox.addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.id === "pv" && nav.prev != null) move(nav.prev);
+    else if (b.id === "nx" && nav.next != null) move(nav.next);
+    else if (b.id === "ms") { const st = S.qs[refs[cur]]; if (st) { st.mastered = !st.mastered; save(); draw(); } }
+    else if (b.id === "lang") { lang = lang === "hi" ? "en" : "hi"; draw(); }
+    else if (b.id === "zm" || b.id === "zp") { S.settings.zoom = Math.max(0.6, Math.min(1.8, Math.round((zoom() + (b.id === "zp" ? 0.1 : -0.1)) * 10) / 10)); save(); draw(); }
+  });
+  palg.addEventListener("click", e => { const b = e.target.closest("button[data-i]"); if (b) { side.classList.remove("open"); move(+b.dataset.i); } });
+  app.querySelector("#tabsec")?.addEventListener("click", e => { const b = e.target.closest("button[data-i]"); if (b) move(+b.dataset.i); });
+  app.querySelector("#rf").addEventListener("click", e => { const b = e.target.closest("button[data-f]"); if (!b) return; filter = b.dataset.f; drawFilters(); if (!want(refs[cur])) cur = firstMatch(); draw(); });
+  app.querySelector("#pal").onclick = () => side.classList.toggle("open");
+  const onKey = e => {
+    if (e.target.matches("input,select,textarea") || document.querySelector(".modal-bg")) return;
+    if (e.key === "ArrowRight" && nav.next != null) move(nav.next); else if (e.key === "ArrowLeft" && nav.prev != null) move(nav.prev);
   };
-  draw();
-  const onKey = e => { if (e.key === "ArrowRight" && i < list.length - 1) { i++; draw(); } else if (e.key === "ArrowLeft" && i > 0) { i--; draw(); } };
   document.addEventListener("keydown", onKey);
   cleanup = () => document.removeEventListener("keydown", onKey);
+  drawFilters(); draw();
+}
+
+/* ======================================================================= history */
+const HF = { kind: "all", sel: new Set() }; // list filter and ticked rows, kept while you move around
+// [ref, answer] pairs an attempt added to the accuracy figures (S.qs): an instant-feedback drill
+// counts each answer as it is given, every other test counts them when it is submitted.
+const recordedAnswers = at => at.instant || at.submitted ? at.refs.filter(r => Q[r] && at.answers[r] != null).map(r => [r, at.answers[r]]) : [];
+function forgetAnswers(ids) {
+  const gone = new Set(ids), touched = new Set();
+  for (const id of ids) for (const [r, a] of recordedAnswers(S.attempts[id])) {
+    const st = S.qs[r]; if (!st) continue;
+    if (a === Q[r].key) st.c = Math.max(0, st.c - 1); else st.w = Math.max(0, st.w - 1);
+    touched.add(r);
+  }
+  // Whether a question is still a mistake follows the latest answer to it that remains.
+  const latest = {};
+  for (const at of Object.values(S.attempts)) if (!gone.has(at.id)) {
+    const t = at.ended || at.started || 0;
+    for (const [r, a] of recordedAnswers(at)) if (touched.has(r) && !(latest[r] && latest[r].t > t)) latest[r] = { t, ok: a === Q[r].key };
+  }
+  for (const r of touched) {
+    const st = S.qs[r];
+    if (st.c + st.w === 0) { delete S.qs[r]; continue; }
+    const l = latest[r];
+    if (l) { st.last = l.ok ? "c" : "w"; st.at = l.t; }
+    else if (!st.w) st.last = "c";
+    else if (!st.c) st.last = "w";
+  }
+}
+async function deleteAttempts(ids) {
+  ids = ids.filter(id => S.attempts[id]);
+  if (!ids.length) return false;
+  const one = ids.length === 1, counted = ids.some(id => recordedAnswers(S.attempts[id]).length);
+  const ok = await modal(`<h2>Delete ${one ? "this attempt" : ids.length + " attempts"}?</h2>
+    <p>${one ? "Its result and answer review are" : "Their results and answer reviews are"} removed from this browser for good. To keep a copy, use Settings → Export backup first.</p>
+    ${counted ? `<label class="chk"><input type="checkbox" id="forget"> Also take ${one ? "its" : "their"} answers out of my accuracy figures and Mistakes list</label>` : ""}`,
+    [{ label: "Cancel", value: false }, { label: one ? "Delete" : `Delete ${ids.length}`, value: true, cls: "primary" }]);
+  if (!ok) return false;
+  if (modal.form.forget) forgetAnswers(ids);
+  for (const id of ids) { delete S.attempts[id]; HF.sel.delete(id); }
+  save(); toast(one ? "Attempt deleted" : `${ids.length} attempts deleted`);
+  return true;
+}
+function historyView() {
+  const all = Object.values(S.attempts);
+  const live = all.filter(a => !a.submitted).sort((a, b) => b.started - a.started);
+  const done = all.filter(a => a.submitted).sort((a, b) => (b.ended || 0) - (a.ended || 0));
+  const nMock = done.filter(a => a.kind === "mock").length;
+  const shown = done.filter(a => HF.kind === "all" || (HF.kind === "mock") === (a.kind === "mock"));
+  for (const id of [...HF.sel]) if (!shown.some(a => a.id === id)) HF.sel.delete(id);
+  const kb = Math.max(1, Math.round((readStored() || "").length / 1024));
+  const kindPill = a => a.kind === "mock" ? '<span class="pill blue">Full mock</span>' : `<span class="pill">${a.timed ? "Timed drill" : "Drill"}</span>`;
+  const row = a => { const r = score(a); return `<tr>
+    <td><input type="checkbox" data-sel="${a.id}" ${HF.sel.has(a.id) ? "checked" : ""} aria-label="Select this attempt"></td>
+    <td class="small">${esc(whenStr(a.ended || a.started))}</td>
+    <td><a href="#/result/${a.id}"><b>${esc(a.title)}</b></a> ${kindPill(a)}</td>
+    <td class="num nowrap"><b>${n2(r.all.net)}</b><span class="muted small"> / ${r.all.n}</span></td>
+    <td class="num hm nowrap">${r.all.c} · ${r.all.w} · ${r.all.n - r.all.att}</td>
+    <td class="num hm">${r.all.att ? pct(r.all.c, r.all.att) + "%" : "—"}</td>
+    <td class="num hm">${fmt(r.all.time)}</td>
+    <td class="num acts"><a class="btn sm" href="#/result/${a.id}">Result</a> <a class="btn sm" href="#/review/${a.id}/all">Review</a> <button class="btn sm danger" data-del="${a.id}">Delete</button></td></tr>`; };
+  const liveRow = a => `<tr><td class="small">${esc(whenStr(a.started))}</td><td><b>${esc(a.title)}</b> ${kindPill(a)}</td>
+    <td class="num">${a.refs.filter(r => a.answers[r] != null).length} / ${a.refs.length} answered</td><td class="num hm">${a.total ? fmt(a.remaining) + " left" : ""}</td>
+    <td class="num acts"><a class="btn sm primary" href="#/exam/${a.id}">Resume</a> <button class="btn sm danger" data-del="${a.id}">Delete</button></td></tr>`;
+  app.innerHTML = `<h1>History</h1>
+  <p class="muted">Every test you finish is kept here. Open its result as you saw it when you submitted, or go through your answers with the question palette. Saved in this browser only (${kb} KB): the website and a copy opened from your computer keep separate histories, and a private window forgets everything when it closes. <a href="#/settings">Export a backup</a> to keep a copy.</p>
+  ${live.length ? `<div class="card" style="margin-bottom:16px"><h2>Not finished</h2><div class="tscroll"><table class="t"><thead><tr><th>Started</th><th>Test</th><th class="num">Progress</th><th class="num hm">Time</th><th></th></tr></thead><tbody>${live.map(liveRow).join("")}</tbody></table></div></div>` : ""}
+  <div class="card">
+    <div class="row" style="margin-bottom:10px;gap:6px"><h2 style="margin:0 8px 0 0">Finished</h2>
+      ${[["all", "All", done.length], ["mock", "Full mocks", nMock], ["drill", "Drills", done.length - nMock]].map(([k, l, n]) => `<button class="btn sm ${HF.kind === k ? "primary" : ""}" data-k="${k}">${l} · ${n}</button>`).join("")}
+      <span class="spacer"></span>
+      <button class="btn sm danger" id="delsel" ${HF.sel.size ? "" : "disabled"}>Delete selected${HF.sel.size ? ` (${HF.sel.size})` : ""}</button></div>
+    ${shown.length ? `<div class="tscroll"><table class="t"><thead><tr><th><input type="checkbox" id="selall" aria-label="Select all" ${shown.every(a => HF.sel.has(a.id)) ? "checked" : ""}></th><th>Submitted</th><th>Test</th><th class="num">Net</th><th class="num hm" title="right · wrong · not answered">✓ · ✗ · –</th><th class="num hm">Accuracy</th><th class="num hm">Time</th><th></th></tr></thead><tbody>${shown.map(row).join("")}</tbody></table></div>`
+      : `<p class="muted" style="margin:0">${done.length ? "None of this kind yet." : `No finished tests yet. Start a <a href="#/mocks">full mock</a> or a <a href="#/practice">practice drill</a>.`}</p>`}
+  </div>`;
+  app.querySelectorAll("[data-k]").forEach(b => b.onclick = () => { HF.kind = b.dataset.k; historyView(); });
+  app.querySelectorAll("[data-sel]").forEach(c => c.onchange = () => { c.checked ? HF.sel.add(c.dataset.sel) : HF.sel.delete(c.dataset.sel); historyView(); });
+  const sa = app.querySelector("#selall"); if (sa) sa.onchange = () => { for (const a of shown) sa.checked ? HF.sel.add(a.id) : HF.sel.delete(a.id); historyView(); };
+  app.querySelector("#delsel").onclick = async () => { if (await deleteAttempts([...HF.sel])) historyView(); };
+  app.querySelectorAll("[data-del]").forEach(b => b.onclick = async () => { if (await deleteAttempts([b.dataset.del])) historyView(); });
 }
 
 /* ======================================================================= mistakes */

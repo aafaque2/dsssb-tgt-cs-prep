@@ -31,6 +31,11 @@ Many TGT CS "PYQ" collections are re-typed with errors, attributed to the wrong 
   - Each sheet has three parts: **Must do** (core facts, tables, formulas), **Most probable questions** (the question types that keep coming back) and **If time permits**.
   - Purple year tags mark facts that were actually asked in that year's paper.
   - Every sheet has a one-click drill of its questions, and sheets print cleanly (one per page) or save as PDF.
+- **History** keeps every mock and drill you take.
+  - Reopen any result exactly as it looked when you submitted.
+  - Review your answers with the exam's question palette and section tabs. The palette shows right, wrong, not answered and marked.
+  - Resume unfinished tests, or delete attempts one at a time or in bulk. When deleting, you can also remove their answers from your accuracy stats.
+  - History stays intact with the site open in several tabs.
 - **Mistakes notebook** lists every question you last got wrong, ready to re-attempt.
 - **Day-by-day plan** up to the exam date you set.
 - **Verified exam facts**: vacancies, pattern, qualifying rules, tie-breaks, dates, with sources.
