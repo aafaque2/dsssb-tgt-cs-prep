@@ -92,6 +92,9 @@ select,input[type=date],input[type=number],input[type=text]{font:inherit;color:v
 .qpaper{background:var(--paper);color:#111;border-radius:10px;padding:14px 16px;border:1px solid var(--border);overflow-x:auto}
 .qpaper img{display:block;max-width:100%;height:auto}
 .qhtml{font-size:calc(1rem * var(--z,1));line-height:1.55}
+.psg{margin-bottom:10px}
+.psg summary{cursor:pointer;font-weight:700;font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.psg .qpaper{max-height:50vh;overflow:auto}
 .qhtml p{margin:.35em 0}
 .qhtml table{border-collapse:collapse;margin:.4em 0}
 .qhtml td,.qhtml th{border:1px solid #c9ced8;padding:4px 8px}
@@ -316,7 +319,10 @@ const CROP_SCALE = 0.8; // crops are rendered at 2x PDF size; 0.8 keeps the smal
 function stemHTML(q, lang) {
   if (q.stem) { const w = Math.round(q.stem[0] * CROP_SCALE * zoom()); return `<div class="qpaper"><img src="img/${q.pid}/${q.n}.png" width="${w}" alt="Question ${q.n}" loading="lazy"></div>`; }
   const h = lang === "hi" && q.hi ? q.hi : q.html;
-  return `<div class="qpaper qhtml" style="--z:${zoom()}">${h}</div>`;
+  // comprehension questions: the shared passage (stored once per paper) comes first
+  const psg = q.pg != null && PMAP[q.pid].passages ? PMAP[q.pid].passages[q.pg] : "";
+  return (psg ? `<details class="psg" open><summary>Passage</summary><div class="qpaper qhtml" style="--z:${zoom()}">${psg}</div></details>` : "") +
+    `<div class="qpaper qhtml" style="--z:${zoom()}">${h}</div>`;
 }
 function optHTML(q, k, lang) {
   if (q.opts) { const w = Math.round(q.opts[k - 1][0] * CROP_SCALE * zoom()); return `<img src="img/${q.pid}/${q.n}_${k}.png" width="${w}" alt="Option ${k}" loading="lazy">`; }
@@ -325,8 +331,9 @@ function optHTML(q, k, lang) {
 }
 function explHTML(q) {
   if (!q.ex) return "";
-  const own = PMAP[q.pid].kind === "crop"; // the official-key papers' explanations are written for this site
-  return `<div class="exbox${q.kw ? " kw" : ""}"><div class="exhead" title="${own ? "Written for this site. The answer shown is always the official DSSSB key; ⚠ marks where the explanation questions that key." : "From the source site (local add-on file)."}">Explanation${own ? "" : " · source site"}${q.kw ? ' <span class="pill amber">key disputed ⚠</span>' : ""}</div><div class="qhtml small">${q.ex}</div></div>`;
+  const own = !q.exsrc; // published explanations are written for this site; exsrc = local add-on file
+  const keyName = PMAP[q.pid].kind === "crop" ? "the official DSSSB key" : "the source's key";
+  return `<div class="exbox${q.kw ? " kw" : ""}"><div class="exhead" title="${own ? `Written for this site. The answer shown is always ${keyName}; ⚠ marks where the explanation questions that key.` : "From the source site (local add-on file)."}">Explanation${own ? "" : " · source site"}${q.kw ? ' <span class="pill amber">key disputed ⚠</span>' : ""}</div><div class="qhtml small">${q.ex}</div></div>`;
 }
 function provenance(q) {
   const p = PMAP[q.pid];
@@ -1017,7 +1024,7 @@ function sheetView(id) {
    is opened from disk, so the hosted site never requests a missing file. */
 function mergeExtras() {
   const X = (window.DSSSB_EXTRAS && window.DSSSB_EXTRAS.explanations) || {};
-  for (const pid in X) for (const n in X[pid]) { const q = Q[pid + "#" + n]; if (q) q.ex = X[pid][n]; }
+  for (const pid in X) for (const n in X[pid]) { const q = Q[pid + "#" + n]; if (q && !q.ex) { q.ex = X[pid][n]; q.exsrc = 1; } }
 }
 if (location.protocol === "file:") {
   const s = document.createElement("script");
