@@ -68,6 +68,7 @@ h3{font-size:1rem;margin:0 0 .4em}
 .exbox.kw{border-left-color:var(--amber)}
 .exhead{font-size:.74rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;cursor:help}
 .exhead .pill{text-transform:none;letter-spacing:0}
+.exbox code{font-family:ui-monospace,Consolas,monospace;font-size:.92em;background:var(--surface);border:1px solid var(--border);padding:0 4px;border-radius:4px}
 table.t{width:100%;border-collapse:collapse;font-size:.92rem}
 table.t th,table.t td{padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
 table.t th{color:var(--muted);font-weight:600;font-size:.82rem}
@@ -317,6 +318,7 @@ function score(at) {
 function zoom() { return S.settings.zoom || 1; }
 const CROP_SCALE = 0.8; // crops are rendered at 2x PDF size; 0.8 keeps the small 2023 print readable
 function stemHTML(q, lang) {
+  if (q.note) return `<div class="note" style="margin:0 0 10px">⚠ ${esc(q.note)}</div>` + stemHTML(Object.assign({}, q, { note: null }), lang);
   if (q.stem) { const w = Math.round(q.stem[0] * CROP_SCALE * zoom()); return `<div class="qpaper"><img src="img/${q.pid}/${q.n}.png" width="${w}" alt="Question ${q.n}" loading="lazy"></div>`; }
   const h = lang === "hi" && q.hi ? q.hi : q.html;
   // comprehension questions: the shared passage (stored once per paper) comes first
