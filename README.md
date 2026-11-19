@@ -1,6 +1,6 @@
 # DSSSB TGT Computer Science: real PYQ practice
 
-A free practice platform for the **DSSSB TGT Computer Science** exam (Post Code **41/26**, Advt. **03/2026**). It is built **only from real previous-year papers**: 1,578 unique questions from 8 actual DSSSB shifts, with full timed mocks, topic drills, a mistakes notebook, an explanation for every question, and 21 ranked cheat sheets. There's no sign-up, and it works offline.
+A free practice platform for the **DSSSB TGT Computer Science** exam (Post Code **41/26**, Advt. **03/2026**). It is built **only from real previous-year papers**: 1,578 unique questions from 8 actual DSSSB shifts, with full timed mocks, topic drills, a mistakes notebook, an explanation for every question, 21 ranked cheat sheets, and hand-picked videos and notes for every topic. There's no sign-up, and it works offline.
 
 ### ▶ **Live site: https://aafaque2.github.io/dsssb-tgt-cs-prep/**
 
@@ -32,6 +32,12 @@ Many TGT CS "PYQ" collections are re-typed with errors, attributed to the wrong 
   - Each sheet has three parts: **Must do** (core facts, tables, formulas), **Most probable questions** (the question types that keep coming back) and **If time permits**.
   - Purple year tags mark facts that were actually asked in that year's paper.
   - Every sheet has a one-click drill of its questions, and sheets print cleanly (one per page) or save as PDF.
+- **Study resources for every topic**: about 290 hand-picked videos, notes and books, with the most useful for this exam first.
+  - Each topic page opens with **Start here** picks, then **PYQ practice**, **one-shots** and **classes** made for DSSSB TGT CS (or a close teacher exam).
+  - General courses, notes and textbooks for learning a topic properly are folded under **Go deeper**: one-shots, quick revision and complete study, including free IGNOU and NCERT course books.
+  - Separate tabs list **solved papers** (real DSSSB TGT CS papers worked through; those on this site link to their mock), **final-week series** and **full DSSSB courses**. A search box covers every link.
+  - Each topic links its cheat sheet and a 20-question drill.
+  - All 349 links were checked on 20 Nov 2026: each video was public and playable, and the lengths and video counts are as YouTube showed them that day.
 - **History** keeps every mock and drill you take.
   - Reopen any result exactly as it looked when you submitted.
   - Review your answers with the exam's question palette and section tabs. The palette shows right, wrong, not answered and marked.
@@ -130,6 +136,7 @@ docs/                 the website (served by GitHub Pages from /docs)
   index.html          the whole app: HTML + CSS + vanilla JS, no dependencies
   data/papers.js      questions, answer keys, sections, topics, explanations
   data/sheets-*.js    the cheat sheets (Section B must-do, Section B if-time-permits, Section A)
+  data/resources.js   study resources for each topic: videos, notes and books
   img/<paper>/        question and option crops, formula images
 screenshots/          images used in this README
 ```

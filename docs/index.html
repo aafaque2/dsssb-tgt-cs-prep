@@ -170,6 +170,54 @@ select,input[type=date],input[type=number],input[type=text]{font:inherit;color:v
 .sheet table.t th,.sheet table.t td{padding:5px 8px}
 .sheet code{font-family:ui-monospace,Consolas,monospace;font-size:.88em;background:var(--surface2);padding:0 4px;border-radius:4px}
 .sheet+.sheet{margin-top:16px}
+/* ---------- study resources ---------- */
+.rtabs{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:14px 0 4px}
+.rtabs a{padding:6px 12px;border-radius:9px;border:1px solid var(--border);background:var(--surface);text-decoration:none;color:var(--muted);font-weight:600;font-size:.9rem;white-space:nowrap}
+.rtabs a:hover{border-color:var(--primary)}
+.rtabs a.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.rtabs a .n{font-weight:500;opacity:.75}
+.rtabs input[type=search]{flex:1;min-width:220px;font:inherit;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 10px}
+.rindex{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0 0}
+.rindex b{font-size:.78rem;color:var(--muted);margin-right:2px}
+.rindex a{font-size:.82rem;padding:2px 9px;border-radius:999px;background:var(--surface);color:var(--text);text-decoration:none;border:1px solid var(--border)}
+.rindex a:hover{border-color:var(--primary);color:var(--primary)}
+.rsec{margin:26px 0 0}
+.rsec>h2{margin:0 0 2px}
+.rcard{margin-top:14px}
+.rhead{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;margin-bottom:8px}
+.rhead h3{font-size:1.08rem;margin:0}
+.rhead h3 a{color:inherit;text-decoration:none}
+.rhead h3 a:hover{color:var(--primary);text-decoration:underline}
+.rtier{display:grid;grid-template-columns:132px minmax(0,1fr);gap:6px 14px;padding:10px 0 4px;border-top:1px solid var(--border)}
+.rtl{font-size:.74rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding-top:2px;color:var(--c)}
+.rlist{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.ritem{display:flex;gap:10px;align-items:flex-start;min-width:0}
+.ric{flex:none;width:18px;height:18px;margin-top:2px}
+.ric svg{width:18px;height:18px;display:block}
+.ric.v{color:var(--red)}.ric.t{color:var(--primary)}.ric.b{color:var(--amber)}
+.rbody{min-width:0}
+.rname a{font-weight:600;text-decoration:none}
+.rname a:hover,.rparts a:hover{text-decoration:underline}
+.rparts{font-size:.9rem}
+.rparts a{font-weight:600;white-space:nowrap;text-decoration:none}
+.rmeta,.rmore{font-size:.84rem}
+.rmeta{color:var(--muted)}
+.rmore a{white-space:nowrap}
+.pill.tiny{font-size:.7rem;padding:0 7px;margin-left:4px;vertical-align:1px;white-space:nowrap}
+.rfoot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-top:10px;margin-top:4px;border-top:1px solid var(--border)}
+.rdeep{margin-top:10px;border-top:1px solid var(--border)}
+.rdeep>summary{cursor:pointer;font-weight:700;padding:10px 0 4px;color:var(--muted)}
+.rdeep>summary:hover{color:var(--text)}
+.rdeep>.rtier:first-of-type{border-top:0}
+.rgh{font-size:.8rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:18px 0 10px}
+.rgh:first-child{margin-top:0}
+.rgh a{color:inherit}
+.rnav{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0 0}
+.rnav .btn{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block}
+.t-star{--c:var(--amber)}.t-pyq{--c:var(--green)}.t-one{--c:var(--primary)}.t-class{--c:var(--purple)}.t-read{--c:var(--muted)}
+.t-done,.t-dquick,.t-dfull{--c:var(--muted)}
+@media (max-width:560px){.rtier{grid-template-columns:1fr;gap:4px}.rtabs input[type=search]{min-width:100%}.rtabs a{padding:5px 9px;font-size:.84rem}
+  .rindex{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}.rindex a,.rindex b{flex:none;white-space:nowrap}}
 @media print{
   :root{--bg:#fff!important;--surface:#fff!important;--surface2:#f2f3f5!important;--text:#000!important;--muted:#444!important;--border:#c8ccd4!important;--primary:#1d4ed8!important;--primary-soft:#e8eefc!important;--green:#15803d!important;--green-soft:#e7f6ec!important;--amber:#b45309!important;--amber-soft:#fdf3e2!important;--purple:#5b21b6!important;--purple-soft:#ede9fe!important;--shadow:none!important}
   .sheet table.t{font-size:1em}
@@ -194,6 +242,7 @@ select,input[type=date],input[type=number],input[type=text]{font:inherit;color:v
     <a href="#/mocks" data-t="mocks">Mock tests</a>
     <a href="#/practice" data-t="practice">Practice</a>
     <a href="#/sheets" data-t="sheets">Cheat sheets</a>
+    <a href="#/resources" data-t="resources">Resources</a>
     <a href="#/mistakes" data-t="mistakes">Mistakes</a>
     <a href="#/history" data-t="history">History</a>
     <a href="#/facts" data-t="facts">Exam facts</a>
@@ -207,6 +256,7 @@ select,input[type=date],input[type=number],input[type=text]{font:inherit;color:v
 <script src="data/sheets-b.js"></script>
 <script src="data/sheets-b2.js"></script>
 <script src="data/sheets-a.js"></script>
+<script src="data/resources.js"></script>
 <script>
 "use strict";
 /* ======================================================================= data */
@@ -351,8 +401,10 @@ function route() {
   if (cleanup) { try { cleanup(); } catch (e) {} cleanup = null; }
   const [, view, id, extra, qn] = (location.hash || "#/home").split("/");
   document.querySelectorAll("#tabs a").forEach(a => a.classList.toggle("on", a.dataset.t === (view === "sheet" ? "sheets" : view === "result" || view === "review" ? "history" : view)));
+  const tab = document.querySelector("#tabs a.on"), nav = tab && tab.parentElement; // on a phone the tab row scrolls: keep the current tab in view
+  if (tab && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = tab.offsetLeft - nav.offsetLeft - (nav.clientWidth - tab.offsetWidth) / 2;
   window.scrollTo(0, 0);
-  const v = { home, mocks, practice, mistakesView, facts, settings, history: historyView, sheets: sheetsIndex, sheet: () => sheetView(id), exam: () => runner(id), result: () => result(id), review: () => review(id, extra, +qn || 0) };
+  const v = { home, mocks, practice, mistakesView, facts, settings, history: historyView, sheets: sheetsIndex, sheet: () => sheetView(id), resources: () => resourcesView(id), exam: () => runner(id), result: () => result(id), review: () => review(id, extra, +qn || 0) };
   const fn = view === "mistakes" ? v.mistakesView : v[view];
   (fn || home)();
 }
@@ -387,6 +439,7 @@ function home() {
         ${mistakes().length ? `<div class="paperrow"><div class="meta"><b>Re-attempt your mistakes</b><div class="muted small">${mistakes().length} questions you got wrong last time</div></div><a class="btn" href="#/mistakes">Open</a></div>` : ""}
         <div class="paperrow"><div class="meta"><b>Section B drill (DoE papers)</b><div class="muted small">20 unseen questions from Discipline 1–5 + Teaching Methodology</div></div><button class="btn" onclick="quickDrill(PART_B)">Drill 20</button></div>
         <div class="paperrow"><div class="meta"><b>Cheat sheets</b><div class="muted small">Must-do topics ranked by past-paper frequency, with the most probable questions</div></div><a class="btn" href="#/sheets">Open</a></div>
+        <div class="paperrow"><div class="meta"><b>Study resources</b><div class="muted small">One-shot videos, quick-revision notes and full courses for every topic</div></div><a class="btn" href="#/resources">Open</a></div>
       </div>
     </div>
     <div class="card">
@@ -1015,11 +1068,153 @@ function sheetView(id) {
   const i = SHEETS.findIndex(x => x.id === id);
   if (i < 0) { sheetsIndex(); return; }
   const s = SHEETS[i], prev = SHEETS[i - 1], next = SHEETS[i + 1];
-  app.innerHTML = `<div class="row noprint" style="margin-bottom:12px"><a class="btn sm" href="#/sheets">← All sheets</a><span class="spacer"></span><button class="btn sm" id="sp">Print / save as PDF</button><button class="btn sm primary" id="sd">Drill 20 questions</button></div>
+  app.innerHTML = `<div class="row noprint" style="margin-bottom:12px"><a class="btn sm" href="#/sheets">← All sheets</a><span class="spacer"></span>${RES_BY_ID[s.id] ? `<a class="btn sm" href="#/resources/${s.id}">Videos &amp; notes</a>` : ""}<button class="btn sm" id="sp">Print / save as PDF</button><button class="btn sm primary" id="sd">Drill 20 questions</button></div>
   ${sheetCard(s)}
   <div class="row noprint" style="margin-top:12px">${prev ? `<a class="btn" href="#/sheet/${prev.id}">← ${esc(prev.title)}</a>` : ""}<span class="spacer"></span>${next ? `<a class="btn" href="#/sheet/${next.id}">${esc(next.title)} →</a>` : ""}</div>`;
   app.querySelector("#sp").onclick = () => window.print();
   app.querySelector("#sd").onclick = () => sheetDrill(s.id);
+}
+
+/* ======================================================================= study resources */
+// Links for every topic (data/resources.js). Each topic lists material made for this exam first
+// (PYQ practice, one-shots, classes), then general and university-level material under "Go deeper".
+// Solved papers, final-week series and full courses are separate collections. Pages:
+// #/resources (all topics), #/resources/<topic id>, #/resources/papers | series | courses.
+const RES = window.DSSSB_RESOURCES || { topics: [] };
+const RES_TOPICS = RES.topics || [];
+const RES_BY_ID = Object.fromEntries(RES_TOPICS.map(t => [t.id, t]));
+const RES_TIER = { star: "★ Start here", pyq: "PYQ practice", one: "One-shot", class: "Classes & concepts", read: "Read" };
+const RES_DEEP = { one: "One-shot", quick: "Quick revision", full: "Complete study" };
+const RES_COLL = {
+  papers: { title: "Solved papers", desc: "Real DSSSB TGT CS papers worked through, question by question. When the paper is on this site, attempt it under Mock tests first, then watch it solved.", groups: { cs: "" } },
+  series: { title: "Final-week series", desc: "Revision series that are running now (new parts most days), MCQ marathons, and short strategy videos for the last days.", groups: { daily: "Daily revision series", mcq: "MCQ marathons", strategy: "Strategy" } },
+  courses: { title: "Full courses", desc: "Complete playlists made for DSSSB TGT CS, for a topic you have to learn from scratch. Each topic page lists the parts that belong to it.", groups: { dsssb: "Made for DSSSB TGT CS", deeper: "Go deeper" } },
+};
+const RES_ICON = {
+  v: '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.8" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M6.6 5.3v5.4L10.9 8z" fill="currentColor"/></svg>',
+  p: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 3.5h9M1.5 7.5h9M1.5 11.5h5.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 9.6v5l4.2-2.5z" fill="currentColor"/></svg>',
+  t: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 1.5h5.6l3.4 3.4v9.6h-9z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M9 1.5v3.5h3.5M5.6 8.3h4.8M5.6 10.9h4.8" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
+  b: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 3c2.3-.9 4.4-.7 6.5.8 2.1-1.5 4.2-1.7 6.5-.8v10c-2.3-.9-4.4-.7-6.5.8-2.1-1.5-4.2-1.7-6.5-.8z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 3.8v10" stroke="currentColor" stroke-width="1.3"/></svg>',
+};
+const RES_KIND = { v: "Video", p: "Playlist", t: "Notes or web page", b: "Book" };
+const resSheet = id => SHEETS.find(s => s.id === id);
+const resTitle = id => { const s = resSheet(id); return s ? s.title.split(":")[0] : (RES_BY_ID[id] && RES_BY_ID[id].title) || id; }; // "Arithmetic: formula sheet" -> "Arithmetic"
+function resAcc(s) { const a = sheetAcc(s), n = a.c + a.w; return n >= 5 ? a.c / n : null; } // null = too few answers to judge
+function resOrder() { // Section B in cheat-sheet rank, then topics without a sheet; then Section A
+  const B = SHEETS.filter(s => s.part === "B" && RES_BY_ID[s.id]).map(s => s.id).concat(RES_TOPICS.filter(t => !resSheet(t.id)).map(t => t.id));
+  const A = SHEETS.filter(s => s.part === "A" && RES_BY_ID[s.id]).map(s => s.id);
+  return { B, A, all: B.concat(A) };
+}
+function resLink(url, label, raw) {
+  return `<a href="${esc(url)}" target="_blank" rel="noopener"${raw ? ` title="${esc("On YouTube: " + raw)}"` : ""}>${esc(label)}</a>`;
+}
+function resSiteNote(site) {
+  if (site === "2021") return ' · <a href="#/mocks">the 2021 papers are on this site</a>';
+  return PMAP[site] ? ` · <a href="#/mocks" title="${esc(PMAP[site].title)}">on this site: attempt it first</a>` : "";
+}
+function resItem(it) {
+  const playlist = it.list || (it.parts && it.parts.every(p => p.url.includes("playlist?")));
+  const ic = it.f === "video" ? (playlist ? "p" : "v") : it.book ? "b" : "t";
+  const age = it.date && RES.checked ? (Date.parse(RES.checked) - Date.parse(it.date)) / 864e5 : 99;
+  const meta = [it.by, it.parts ? "" : it.meta, age <= 30 ? "posted " + shortDate(it.date + "T00:00") : "", it.note].filter(Boolean).join(" · ");
+  const pills = (it.lang === "en" ? '<span class="pill tiny">in English</span>' : "") +
+    (it.book ? '<span class="pill tiny amber" title="A print book you buy; it isn\'t free online">Book</span>' : "");
+  const parts = it.parts ? `<div class="rparts">${it.parts.map(p => resLink(p.url, p.n, p.raw) + ` <span class="muted">${esc(p.meta)}</span>`).join('<span class="muted"> · </span>')}</div>` : "";
+  const more = it.more ? `<div class="rmore"><span class="muted">Also: </span>${it.more.map(m => resLink(m.url, m.name, m.raw) + (m.meta ? ` <span class="muted">${esc(m.meta)}</span>` : "")).join('<span class="muted"> · </span>')}</div>` : "";
+  return `<li class="ritem"><span class="ric ${ic === "p" ? "v" : ic}" title="${RES_KIND[ic]}">${RES_ICON[ic]}</span><div class="rbody">
+    <div class="rname">${it.url ? resLink(it.url, it.name, it.raw) : `<b>${esc(it.name)}</b>`}${pills}</div>${parts}
+    <div class="rmeta">${esc(meta)}${it.site ? resSiteNote(it.site) : ""}</div>${more}</div></li>`;
+}
+const resTier = (label, list, cls) => list.length ? `<div class="rtier t-${cls}"><div class="rtl">${label}</div><ul class="rlist">${list.map(resItem).join("")}</ul></div>` : "";
+function resHead(t, link) {
+  const s = resSheet(t.id), a = s ? sheetAcc(s) : null, tot = a ? a.c + a.w : 0, p = tot ? pct(a.c, tot) : 0, title = esc(resTitle(t.id));
+  return `<div class="rhead"><div style="flex:1;min-width:200px"><h3>${link ? `<a href="#/resources/${t.id}">${title}</a>` : title}</h3>
+    <div class="muted small">${s ? `#${s.rank} in Section ${s.part} · ${esc(s.freq)}` : "No cheat sheet for this topic, but its questions do come up"}</div></div>
+    <div class="row" style="gap:6px">${tot ? `<span class="pill ${p >= 70 ? "green" : p >= 50 ? "amber" : "red"}" title="${a.c} right, ${a.w} wrong in your practice">Your accuracy ${p}%</span>` : ""}${s ? `<a class="btn sm" href="#/sheet/${s.id}">Cheat sheet</a><button class="btn sm" data-sd="${s.id}">Drill 20</button>` : ""}</div></div>`;
+}
+function resCount(t) {
+  const n = k => t.exam.filter(i => i.t === k).length, out = [];
+  if (n("pyq")) out.push(`${n("pyq")} PYQ practice`);
+  if (n("one")) out.push(`${n("one")} one-shot${n("one") > 1 ? "s" : ""}`);
+  if (n("class")) out.push(`${n("class")} class${n("class") > 1 ? "es" : ""}`);
+  if (t.deeper.length) out.push(`${t.deeper.length} to go deeper`);
+  return out.join(" · ");
+}
+function resCompact(t) {
+  return `<article class="card rcard" id="res-${t.id}">${resHead(t, true)}${resTier(RES_TIER.star, t.exam.filter(i => i.star), "star")}
+    <div class="rfoot"><a class="btn sm" href="#/resources/${t.id}">All ${t.exam.length + t.deeper.length} for this topic →</a><span class="muted small">${resCount(t)}</span></div></article>`;
+}
+const RS = { open: new Set() }; // topics whose "Go deeper" list was opened
+function resTopicPage(id) {
+  const t = RES_BY_ID[id], order = resOrder().all, i = order.indexOf(id), prev = order[i - 1], next = order[i + 1];
+  const rest = ["pyq", "one", "class", "read"].map(k => resTier(RES_TIER[k], t.exam.filter(it => it.t === k && !it.star), k)).join("");
+  const deep = t.deeper.length ? `<details class="rdeep" data-deep="${id}"${RS.open.has(id) ? " open" : ""}><summary>Go deeper: general courses, notes and books (${t.deeper.length})</summary>
+    ${Object.entries(RES_DEEP).map(([k, label]) => resTier(label, t.deeper.filter(it => it.t === k), "d" + k)).join("")}</details>` : "";
+  return `<div class="rnav"><a class="btn sm" href="#/resources">← All topics</a><span class="spacer"></span>${prev ? `<a class="btn sm" href="#/resources/${prev}" title="Previous topic">← ${esc(resTitle(prev))}</a>` : ""}${next ? `<a class="btn sm" href="#/resources/${next}" title="Next topic">${esc(resTitle(next))} →</a>` : ""}</div>
+    <article class="card rcard" id="res-${id}">${resHead(t, false)}${resTier(RES_TIER.star, t.exam.filter(it => it.star), "star")}${rest}${deep}</article>`;
+}
+function resCollection(key) {
+  const c = RES_COLL[key], items = RES[key] || [];
+  return `<p class="muted" style="margin:12px 0 0">${c.desc}</p><div class="card" style="margin-top:12px">${Object.entries(c.groups).map(([g, label]) => {
+    const list = items.filter(i => i.t === g);
+    return list.length ? `${label ? `<h3 class="rgh">${label}</h3>` : ""}<ul class="rlist">${list.map(resItem).join("")}</ul>` : "";
+  }).join("")}</div>`;
+}
+function resOverview() {
+  const { B, A } = resOrder(), chips = ids => ids.map(id => `<a href="#/resources/${id}">${esc(resTitle(id))}</a>`).join("");
+  return `<div class="rindex"><b>Section B</b>${chips(B)}</div><div class="rindex"><b>Section A</b>${chips(A)}</div>
+  <section class="rsec"><h2>Section B: Computer Science + Teaching Methodology</h2><p class="muted small" style="margin:0">In the cheat sheets' order, most questions per paper first. Each card shows where to start; open a topic for the rest.</p>${B.map(id => resCompact(RES_BY_ID[id])).join("")}</section>
+  <section class="rsec"><h2>Section A: general sections</h2><p class="muted small" style="margin:0">20 questions each, from channels that teach the DSSSB general paper.</p>
+    ${(RES.secA || []).length ? `<article class="card rcard"><div class="rhead"><h3>All of Section A</h3></div><ul class="rlist">${RES.secA.map(resItem).join("")}</ul></article>` : ""}
+    ${A.map(id => resCompact(RES_BY_ID[id])).join("")}</section>`;
+}
+let _resIndex = null; // every listed link, with where it sits, for the search box
+function resIndex() {
+  if (_resIndex) return _resIndex;
+  const out = [], words = it => [it.name, it.by, it.raw, it.note, ...(it.parts || []).flatMap(p => [p.n, p.raw]), ...(it.more || []).flatMap(m => [m.name, m.raw])].filter(Boolean).join(" ").toLowerCase();
+  for (const t of RES_TOPICS) {
+    for (const it of t.exam) out.push({ it, where: `${resTitle(t.id)} · ${it.star ? "Start here" : RES_TIER[it.t]}`, href: "#/resources/" + t.id });
+    for (const it of t.deeper) out.push({ it, where: `${resTitle(t.id)} · Go deeper`, href: "#/resources/" + t.id });
+  }
+  for (const it of RES.secA || []) out.push({ it, where: "All of Section A", href: "#/resources" });
+  for (const k of Object.keys(RES_COLL)) for (const it of RES[k] || []) out.push({ it, where: RES_COLL[k].title, href: "#/resources/" + k });
+  out.forEach(e => e.text = words(e.it));
+  return (_resIndex = out);
+}
+function resSearch(q) {
+  const words = q.toLowerCase().split(/\s+/).filter(Boolean), hits = resIndex().filter(e => words.every(w => e.text.includes(w)));
+  const groups = {}; for (const h of hits) (groups[h.where] = groups[h.where] || { href: h.href, list: [] }).list.push(h.it);
+  return `<p class="muted small" style="margin:12px 0 0">${hits.length} link${hits.length === 1 ? "" : "s"} match “${esc(q)}”.${hits.length ? "" : " Try a topic, a channel, or a word such as PYQ, SQL or Piaget."}</p>
+    ${Object.entries(groups).map(([w, g]) => `<div class="card" style="margin-top:12px"><h3 class="rgh"><a href="${g.href}">${esc(w)}</a></h3><ul class="rlist">${g.list.map(resItem).join("")}</ul></div>`).join("")}`;
+}
+function resourcesView(arg) {
+  if (!RES_TOPICS.length) { app.innerHTML = `<div class="card"><h2>Resources not found</h2><p>Keep <code>index.html</code> next to the <code>data</code> folder and open it from there.</p></div>`; return; }
+  const view = RES_BY_ID[arg] ? "topic" : RES_COLL[arg] ? arg : "topics";
+  const links = new Set(resIndex().map(e => e.it.url || (e.it.parts && e.it.parts[0].url) || e.it.name)).size;
+  const dl = daysLeft(), { all } = resOrder();
+  const weakest = all.filter(id => resSheet(id)).map(id => ({ id, a: resAcc(resSheet(id)) })).filter(x => x.a != null).sort((x, y) => x.a - y.a).slice(0, 3);
+  const advice = view !== "topics" || dl < 0 ? "" : dl === 0 ? "<b>Exam day.</b> Don't start anything new; a quick look at a cheat sheet is enough."
+    : `<b>${dl} day${dl === 1 ? "" : "s"} to go.</b> ` + (dl <= 21
+      ? `Attempt a full mock, then watch the same paper <a href="#/resources/papers">solved</a>. For a weak topic, open it and start with its PYQ videos; the <a href="#/resources/series">final-week series</a> revise everything.`
+      : "There is time for full courses on the topics that carry the most marks; open a topic to see them.")
+      + (weakest.length ? `<br>Your weakest topics so far: ${weakest.map(x => `<a href="#/resources/${x.id}">${esc(resTitle(x.id))}</a> ${Math.round(x.a * 100)}%`).join(" · ")}` : "");
+  const cur = view === "topic" ? "topics" : view;
+  const tab = (key, label, n) => `<a href="#/resources${key === "topics" ? "" : "/" + key}" class="${key === cur ? "on" : ""}">${label} <span class="n">${n}</span></a>`;
+  const checked = RES.checked ? new Date(RES.checked + "T00:00").toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : "";
+  app.innerHTML = `<h1>Study resources</h1>
+  <p class="muted" style="margin-top:0">Videos, notes and books for every topic. Material made for DSSSB TGT CS comes first: PYQ practice, one-shots and classes. General courses and textbooks are folded under <b>Go deeper</b>.</p>
+  ${advice ? `<div class="note blue">${advice}</div>` : ""}
+  <div class="rtabs">${tab("topics", "By topic", all.length)}${tab("papers", "Solved papers", (RES.papers || []).length)}${tab("series", "Final-week series", (RES.series || []).length)}${tab("courses", "Full courses", (RES.courses || []).length)}
+    <input type="search" id="rq" placeholder="Search all ${links} links: a topic, a channel, PYQ…" aria-label="Search the resources"></div>
+  <div id="rbody">${view === "topic" ? resTopicPage(arg) : view === "topics" ? resOverview() : resCollection(view)}</div>
+  <p class="footer-note">Videos are in Hindi unless marked <b>in English</b>, and everything is free except items marked <b>Book</b>. All links were checked on ${esc(checked)}: every video was public and playable, and lengths and video counts are as YouTube showed them that day. The videos come from independent channels: the check covers that each link works and fits this exam, not every answer given in it. Where a video disagrees with a paper's official key on this site, trust the key. Found a dead link? <a href="${REPO}/issues" target="_blank" rel="noopener">Report it on GitHub</a>.</p>`;
+  const body = app.querySelector("#rbody"), page = body.innerHTML, q = app.querySelector("#rq");
+  const wire = () => {
+    body.querySelectorAll("[data-sd]").forEach(b => b.onclick = () => sheetDrill(b.dataset.sd));
+    body.querySelectorAll("details[data-deep]").forEach(d => d.ontoggle = () => { d.open ? RS.open.add(d.dataset.deep) : RS.open.delete(d.dataset.deep); });
+  };
+  q.oninput = () => { const v = q.value.trim(); body.innerHTML = v ? resSearch(v) : page; wire(); };
+  wire();
 }
 
 /* Optional local add-on file (not part of the published site). Only looked for when the app
